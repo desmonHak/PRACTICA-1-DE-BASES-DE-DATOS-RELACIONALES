@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.paint.Color?>
+<?import javafx.scene.paint.LinearGradient?>
+<?import javafx.scene.paint.Stop?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="634.0" prefWidth="688.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.practica1debasesdedatosrelacionales.Controller.CuestionarioController">
+   <children>
+      <AnchorPane layoutX="137.0" layoutY="23.0" prefHeight="49.0" prefWidth="498.0" style="-fx-background-color: gray; -fx-background-radius: 10px;">
+         <children>
+            <TextField fx:id="textFieldNumeroCita" layoutX="139.0" layoutY="12.0" prefHeight="25.0" prefWidth="58.0" promptText="numero" />
+            <Label layoutX="34.0" layoutY="16.0" text="Numero de cita">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="225.0" layoutY="15.0" text="Fecha Cita">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <DatePicker fx:id="fieldDateCita" layoutX="300.0" layoutY="12.0" />
+         </children></AnchorPane>
+      <AnchorPane layoutX="33.0" layoutY="92.0" prefHeight="143.0" prefWidth="602.0" style="-fx-background-color: gray; -fx-background-radius: 10px;">
+         <children>
+            <TextField fx:id="textFieldDNI" layoutX="135.0" layoutY="114.0" prefHeight="25.0" prefWidth="74.0" promptText="01234567X" />
+            <Label layoutX="98.0" layoutY="117.0" text="DNI">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="textFieldName" layoutX="135.0" layoutY="14.0" prefHeight="25.0" prefWidth="216.0" promptText="Nombre Apellido1 Apellido2" />
+            <Label layoutX="14.0" layoutY="16.0" text="Nombre Paciente">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="textFieldDireccion" layoutX="135.0" layoutY="47.0" prefHeight="25.0" prefWidth="216.0" promptText="C/ Moral, 25" />
+            <Label layoutX="68.0" layoutY="50.0" text="Direccion">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="textFieldTelf" layoutX="135.0" layoutY="82.0" prefHeight="25.0" prefWidth="108.0" promptText="+34 643 72 89 67" />
+            <Label layoutX="70.0" layoutY="85.0" text="Telefono">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Label layoutX="464.0" layoutY="4.0" text="ID draw">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <Canvas fx:id="IDdrawCanvas" height="100.0" layoutX="438.0" layoutY="32.0" width="100.0" />
+            <Slider fx:id="sliderZoom" blockIncrement="1.0" layoutX="546.0" layoutY="28.0" majorTickUnit="8.0" max="32.0" min="1.0" minorTickCount="1" orientation="VERTICAL" prefHeight="108.0" prefWidth="14.0" value="8.0" />
+            <Button layoutX="267.0" layoutY="98.0" mnemonicParsing="false" onAction="#onActionBorrarDatosPaciente" prefHeight="33.0" prefWidth="84.0" style="-fx-background-color: #b5b2a8; -fx-border-color: black; -fx-border-radius: 15px; -fx-background-radius: 15px;" text="Borrar datos" />
+         </children></AnchorPane>
+      <AnchorPane layoutX="33.0" layoutY="259.0" prefHeight="58.0" prefWidth="602.0" style="-fx-background-color: gray; -fx-background-radius: 10px;">
+         <children>
+            <Label layoutX="48.0" layoutY="17.0" text="Especialidad">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+            <ComboBox fx:id="textFieldEspecialidad" layoutX="136.0" layoutY="15.0" prefWidth="150.0" />
+         </children>
+      </AnchorPane>
+      <TableView fx:id="tableCitas" layoutX="83.0" layoutY="367.0" prefHeight="200.0" prefWidth="514.0">
+        <columns>
+          <TableColumn fx:id="colNCitas" prefWidth="169.0" text="Numero de cita" />
+          <TableColumn fx:id="colFecha" prefWidth="167.0" text="Fecha" />
+            <TableColumn fx:id="colEspecialidad" prefWidth="177.0" text="Especialidad" />
+        </columns>
+      </TableView>
+      <Label layoutX="270.0" layoutY="340.0" text="Citas del Paciente">
+         <font>
+            <Font size="18.0" />
+         </font>
+         <textFill>
+            <LinearGradient endX="1.0" endY="1.0">
+               <stops>
+                  <Stop>
+                     <color>
+                        <Color green="0.1184210553765297" blue="0.4736842215061188" />
+                     </color>
+                  </Stop>
+                  <Stop offset="0.3370027827795056">
+                     <color>
+                        <Color green="0.05714286118745804" blue="1.0" />
+                     </color>
+                  </Stop>
+                  <Stop offset="0.7294156163038139">
+                     <color>
+                        <Color red="0.42779606580734253" green="0.08223684132099152" blue="0.7105262875556946" />
+                     </color>
+                  </Stop>
+                  <Stop offset="1.0">
+                     <color>
+                        <Color red="0.32899999618530273" green="0.08460000157356262" blue="0.9399999976158142" />
+                     </color>
+                  </Stop>
+               </stops>
+            </LinearGradient>
+         </textFill>
+      </Label>
+      <Button layoutX="83.0" layoutY="576.0" mnemonicParsing="false" onAction="#onActionAddCita" prefHeight="33.0" prefWidth="84.0" style="-fx-background-color: #b5b2a8; -fx-border-color: black; -fx-border-radius: 15px; -fx-background-radius: 15px;" text="Nueva Cita" />
+      <Button layoutX="489.0" layoutY="576.0" mnemonicParsing="false" onAction="#onActionModificarCita" prefHeight="33.0" prefWidth="108.0" style="-fx-background-color: #b5b2a8; -fx-border-color: black; -fx-border-radius: 15px; -fx-background-radius: 15px;" text="Modificar Cita" />
+      <Button layoutX="286.0" layoutY="576.0" mnemonicParsing="false" onAction="#onActionDeleteCita" prefHeight="33.0" prefWidth="108.0" style="-fx-background-color: #b5b2a8; -fx-border-color: black; -fx-border-radius: 15px; -fx-background-radius: 15px;" text="Borrar Cita" />
+      <Button layoutX="41.0" layoutY="31.0" mnemonicParsing="false" onAction="#onActionVolver" prefHeight="33.0" prefWidth="84.0" style="-fx-background-color: #b5b2a8; -fx-border-color: black; -fx-border-radius: 15px; -fx-background-radius: 15px;" text="Volver" />
+   </children>
+</AnchorPane>
