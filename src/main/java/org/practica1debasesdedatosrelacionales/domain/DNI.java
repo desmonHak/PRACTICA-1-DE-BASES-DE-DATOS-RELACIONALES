@@ -7,6 +7,11 @@ public class DNI {
     private Integer number;
     private char letter;
 
+    /**
+     * Calculamos la letra del DNI y validamos si es la que debe ser, en caso de no serlo,
+     * indicamos cual deberia ser
+     * @param dni a comprobar
+     */
     public DNI(String dni) {
 
         if (dni.length() != 9) {

@@ -13,9 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO.load_especialidades;
+
 public class CitaDAO {
     private Connection conn;
     public void connect() throws SQLException, IOException {
+        load_especialidades(); // cargamos todas las especialidades
         Properties configuration = new Properties();
 
         configuration.load(R.getProperties("database.properties"));
@@ -47,7 +50,7 @@ public class CitaDAO {
         ps.executeUpdate();
     }
 
-    public List<Cita> select(DNI dni) throws SQLException {
+    public List<Cita> select(DNI dni) throws SQLException, IOException {
         if (conn == null || conn.isClosed()) {
             throw new SQLException("Conexión a base de datos no establecida.");
         }

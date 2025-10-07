@@ -57,11 +57,9 @@ public class CuestionarioController implements Initializable {
     // almacena la cita seleccionada en la tabla
     private Cita cita_now;
 
-    private CitaDAO citasDB = new CitaDAO();
+    private final CitaDAO citasDB = new CitaDAO();
     private double xOffset = 0;
     private double yOffset = 0;
-
-
 
     // solo repintar si el zoom fue cambiado
     void paint_id_draw(int blockSize) {
@@ -139,6 +137,9 @@ public class CuestionarioController implements Initializable {
         }
     }
 
+    /**
+     * Actualizamos la tabla con los nuevos datos de Base de datos
+     */
     void updateTable() {
 
         try {
@@ -168,9 +169,12 @@ public class CuestionarioController implements Initializable {
         tableCitas.setRowFactory( tv -> {
             TableRow<Cita> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
+                // al hacer click sobre una fila de la tabla
                 if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
-                    cita_now = row.getItem();
+                    cita_now = row.getItem(); // obtener la cita si la fila no esta vacia
                     System.out.println(cita_now);
+
+                    // y cambiar los campos de texto con los datos de la cita seleccionada
                     textFieldNumeroCita.setText(cita_now.getNumero_cita().toString());
                     textFieldEspecialidad.setValue(cita_now.getEspecialidad());
                     fieldDateCita.setValue(cita_now.getFecha_cita().toLocalDate());
@@ -180,6 +184,11 @@ public class CuestionarioController implements Initializable {
         });
     }
 
+    /**
+     * Actualizar los campos de la interfaz grafica, con los datos del
+     * paciente registrado(loginController.paciente_login)
+     *
+     */
     void update_user_Gui_data() {
         textFieldTelf.setText(loginController.paciente_login.getTelefono());
         textFieldDireccion.setText(loginController.paciente_login.getDireccion());
@@ -189,6 +198,7 @@ public class CuestionarioController implements Initializable {
         try {
             citasDB.connect();
             int n_cita = citasDB.getMaxNumeroCita(); // primero hay que conectarse;
+            // cambiar el campo del numero de cita, con el valor obtenido de la DB
             textFieldNumeroCita.setText(String.valueOf(n_cita));
             citasDB.desconnect();
         } catch (SQLException | IOException e) {
@@ -196,17 +206,24 @@ public class CuestionarioController implements Initializable {
         }
     }
 
+    /**
+     * Campo para inicializar los datos y comporamientos de la GUI
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        /**
+         * Pintar por primera vez el ID unico usando bloques de 8 pixeles
+         */
         paint_id_draw(8);
+
+        // obtener el valor del elemento Slider, convertirlo a un valor int para el calculo y forzar el repintado del ID
         sliderZoom.valueProperty().addListener((obs, oldVal, newVal) -> {
             System.out.println((int)newVal.doubleValue());
             paint_id_draw((int)newVal.doubleValue());
         });
 
-        updateTable();
-
+        // indicar como obtener los dato de la columna
         colEspecialidad.setCellValueFactory(
                 new PropertyValueFactory<Cita, Especialidad>("especialidad"));
         colFecha.setCellValueFactory(
@@ -214,10 +231,18 @@ public class CuestionarioController implements Initializable {
         colNCitas.setCellValueFactory(
                 new PropertyValueFactory<Cita, Integer>("numero_cita"));
 
+        // actualizar la tabla con los datos del usuario
+        updateTable();
+
+        /**
+         * obtener todas las especialidades de la base de datos
+         * y añadirlas en el desplegable
+         */
         for(Especialidad espe : Especialidad.values()) {
             textFieldEspecialidad.getItems().add(espe);
         }
 
+        // actualizar los datos de la interfaz con los datos del usuario
         update_user_Gui_data();
 
         // obtengo la escena a traves del canvas
@@ -232,9 +257,11 @@ public class CuestionarioController implements Initializable {
                         PacienteDAO pacienteDB = new PacienteDAO();
                         Paciente paciente = null;
                         try {
+                            // obtener el DNI del usuario validando si es un DNI
                             DNI dni = new DNI(textFieldDNI.getText());
                             try {
                                 pacienteDB.connect();
+                                // obtenemos el paciente a traves del DNI si todo fue bieb
                                 paciente = pacienteDB.select(dni);
                                 pacienteDB.desconnect();
                             } catch (SQLException | IOException e) {
@@ -243,10 +270,11 @@ public class CuestionarioController implements Initializable {
                             if (paciente != null) {
                                 // cambiamos el paciente si todo fue bien y actualizamos la GUI con los nuevos datos
                                 loginController.paciente_login = paciente;
-                                update_user_Gui_data();
+                                update_user_Gui_data(); // actualizar los datos de la interfaz grafica con los datos nuevos
                                 updateTable(); // actualizar tabla
                                 force_paint_id_draw(actual_zoom); // repintar el ID del usuario, forzandolo
                             } else {
+                                // si paciente es null el paciente no se encontro
                                 throw new SQLDataNotFound("Este paciente no existe");
                             }
                         } catch (DniException e) {
@@ -256,9 +284,10 @@ public class CuestionarioController implements Initializable {
                                     "El paciente con DNI %s no existe".formatted(textFieldDNI.getText()));
                         }
 
+                        // consumimos el evento
                         event.consume();
                     } else if (event.getCode() == KeyCode.BACK_SPACE) {
-                        // si se presiona la tecla borrar, se borra todos los datos
+                        // si se presiona la tecla borrar, se borra todos los datos de los campos
                         onActionBorrarDatosPaciente(null);
                         event.consume();
                     }
@@ -276,6 +305,7 @@ public class CuestionarioController implements Initializable {
 
         Scene loginScene = new Scene(panel);
 
+        // me permite especificar como se movera la ventana
         panel.setOnMousePressed(event -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
@@ -285,6 +315,7 @@ public class CuestionarioController implements Initializable {
             InitWindows.p_stage.setY(event.getScreenY() - yOffset);
         });
 
+        // volver a la ventana de login
         InitWindows.p_stage.setScene(loginScene);
         InitWindows.p_stage.show();
     }
@@ -292,13 +323,23 @@ public class CuestionarioController implements Initializable {
     public void onActionAddCita(ActionEvent actionEvent) throws SQLException, IOException {
         citasDB.connect();
         try {
+            // obtener el numero de cita + 1
             int n_cita = citasDB.getMaxNumeroCita() + 1; // primero hay que conectarse;
+            Especialidad especialidad = textFieldEspecialidad.getValue();
+            if (especialidad == null) {
+                AlertsGlobal.invokeAlert("Error", "Debe seleccionar una especialidad");
+                return;
+            }
+
+            // crear una cita con los datos obtenidos
             Cita cita = new Cita(
                     new DNI(textFieldDNI.getText()),
                     Date.valueOf(fieldDateCita.getValue()),
-                    textFieldEspecialidad.getValue(),
+                    especialidad,
                     n_cita
             );
+
+            // insertar en la base de datos
             citasDB.insert(cita);
         } catch (DniException e) {
             AlertsGlobal.invokeAlert("Error", e.getMessage());
@@ -306,13 +347,17 @@ public class CuestionarioController implements Initializable {
         finally {
             citasDB.desconnect();
         }
+
+        // actualizar la tabla de la DB para mostrar el nuevo campo ingresada
         updateTable();
     }
 
     public void onActionDeleteCita(ActionEvent actionEvent) throws SQLException, IOException {
+        // si no escogio una cita, mostrar error
         if (cita_now != null) {
             citasDB.connect();
             try {
+                // eliminar la cita seleccionado
                 citasDB.delete(loginController.paciente_login, cita_now);
             } finally {
                 citasDB.desconnect();
@@ -324,22 +369,28 @@ public class CuestionarioController implements Initializable {
     }
 
     public void onActionModificarCita(ActionEvent actionEvent) throws SQLException, IOException {
+        /**
+         * si la cita no fue seleccionada mostrar error
+         */
         if (cita_now != null) {
             cita_now.setEspecialidad(textFieldEspecialidad.getValue());
             cita_now.setFecha_cita(Date.valueOf(fieldDateCita.getValue()));
 
             citasDB.connect();
             try {
+                // actualizar la cita
                 citasDB.update(cita_now);
             } finally{
                 citasDB.desconnect();
             }
+            // actualizar tabla
             updateTable();
         } else {
             AlertsGlobal.invokeAlert("Error", "Debe seleccionar una cita");
         }
     }
 
+    // borrar todos los campos de texto
     public void onActionBorrarDatosPaciente(ActionEvent actionEvent) {
         textFieldTelf.setText("");
         textFieldDireccion.setText("");

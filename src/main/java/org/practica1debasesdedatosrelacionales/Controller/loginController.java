@@ -37,6 +37,7 @@ public class loginController {
 
     public void onActionLogin(ActionEvent actionEvent) throws SQLException, IOException {
 
+        // realizamos mi lambda personalizada de como obtener los datos
         ProcessResulSet process = (ResultSet rs)->{
             if (rs == null) {
                 return null;
@@ -76,6 +77,10 @@ public class loginController {
 
             conn.desconnect();
 
+            /**
+             * obtenemos la clase SHA256 del paciente y accedemos al mectodo check para averiguar
+             * si la contraseña ingresada es la misma que la ya existente en la DB
+             */
             if (paciente.getHashClass().check_password(fieldPassword.getText())) {
                 // guardamos globalmente el paciente que ingreso
                 paciente_login = paciente;

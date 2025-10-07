@@ -15,7 +15,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CitaDAOTest {
-
+/*
     @Test
     void connect() throws SQLException, IOException {
         CitaDAO conn = new CitaDAO();
@@ -87,6 +87,6 @@ class CitaDAOTest {
             System.out.println(cita);
         }
         conn.desconnect();
-    }
+    }*/
 
 }

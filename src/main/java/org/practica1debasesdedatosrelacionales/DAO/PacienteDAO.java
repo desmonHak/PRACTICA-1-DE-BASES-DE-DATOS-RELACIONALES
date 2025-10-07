@@ -10,10 +10,14 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 
+import static org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO.load_especialidades;
+
 public class PacienteDAO {
 
     private Connection conn;
     public void connect() throws SQLException, IOException {
+        load_especialidades(); // cargamos todas las especialidades
+
         Properties configuration = new Properties();
 
         configuration.load(R.getProperties("database.properties"));
@@ -66,7 +70,7 @@ public class PacienteDAO {
             System.out.println("SQLState: " + sqlState);
             if (sqlState.equals("S1000")) {
                 System.out.println("No se encontro estos datos, salida: " + e.getMessage());
-                throw new SQLDataNotFound("No se encontro estos datos" + e.getMessage());
+                throw new SQLDataNotFound("No se encontro estos datos: " + e.getMessage());
             } else {
                 System.out.println("Error SQL desconocido/no contemplado: " + e.getMessage());
                 throw new SQLUnknownException(e);
