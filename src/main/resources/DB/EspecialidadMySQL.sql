@@ -12,10 +12,26 @@ CREATE TABLE IF NOT EXISTS Especialidad (
 	nombre TEXT
 );
 
-INSERT INTO Especialidad values
-	("Cirugia"),
+INSERT INTO Especialidad (nombre) VALUES
+    ("Cirugia"),
     ("Cardiologia"),
     ("Urologia"),
-    ("Radiografia");
+    ("Radiografia"),
+    ("Pediatria"),
+    ("Dermatologia"),
+    ("Neurologia"),
+    ("Oftalmologia"),
+    ("Traumatologia"),
+    ("Ginecologia"),
+    ("Endocrinologia"),
+    ("Psiquiatria"),
+    ("Reumatologia"),
+    ("Oncologia"),
+    ("Neumologia"),
+    ("Otorrinolaringologia"),
+    ("Medicina General"),
+    ("Fisioterapia"),
+    ("Nutricion"),
+    ("Anestesiologia");
 
 select * from Especialidad;
