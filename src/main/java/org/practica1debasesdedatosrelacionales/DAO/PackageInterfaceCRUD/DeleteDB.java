@@ -1,6 +1,11 @@
 package org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD;
 
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
+
+import java.sql.SQLException;
+import java.util.List;
+
 @FunctionalInterface
-public interface RemoveDB<ClassConnection> {
-    void invokeRemove(ClassConnection connection, Object condition);
+public interface DeleteDB<ClassConnection> {
+    void invokeRemove(ClassConnection connection, String table, List<ConditionsDB> condiciones) throws SQLException;
 }

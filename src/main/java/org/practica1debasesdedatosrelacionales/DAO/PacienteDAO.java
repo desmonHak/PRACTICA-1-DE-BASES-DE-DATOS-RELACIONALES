@@ -1,5 +1,6 @@
 package org.practica1debasesdedatosrelacionales.DAO;
 
+import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLUnknownException;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.TypeDataUnknown;
@@ -20,7 +21,7 @@ public class PacienteDAO {
 
         Properties configuration = new Properties();
 
-        configuration.load(R.getProperties("database.properties"));
+        configuration.load(R.getProperties("databaseMongoDB.properties"));
         String host = configuration.getProperty("host");
         String port = configuration.getProperty("port");
         String name = configuration.getProperty("name");
@@ -95,7 +96,7 @@ public class PacienteDAO {
      */
     public Paciente select(
             String field_by_search, Object value_search,
-            ProcessResulSet process
+            ProcessSelectData process
     ) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(
                 "select dni, nombre, email, password, telefono, direccion from Paciente where %s = ?".formatted(
@@ -117,7 +118,7 @@ public class PacienteDAO {
         ResultSet rs = ps.executeQuery();
         rs.next();
 
-        return (Paciente) process.invokeProcessResultSet(rs);
+        return (Paciente) process.invokeProcessSelectData(rs);
     }
 
 

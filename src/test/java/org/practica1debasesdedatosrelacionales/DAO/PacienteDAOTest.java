@@ -1,19 +1,14 @@
 package org.practica1debasesdedatosrelacionales.DAO;
 
 import org.junit.jupiter.api.Test;
-import org.practica1debasesdedatosrelacionales.domain.Cita;
+import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
 import org.practica1debasesdedatosrelacionales.domain.DNI;
-import org.practica1debasesdedatosrelacionales.domain.Especialidad;
 import org.practica1debasesdedatosrelacionales.domain.Paciente;
 
 import java.io.IOException;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
-import java.time.LocalDate;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class PacienteDAOTest {
 
@@ -86,7 +81,7 @@ class PacienteDAOTest {
         Paciente paciente = conn.select(new DNI("67984567V"));
         System.out.println(paciente);
 
-        ProcessResulSet process = (ResultSet rs)->{
+        ProcessSelectData<ResultSet> process = (ResultSet rs)->{
             return new Paciente(
                     new DNI(rs.getString(1)),
                     rs.getString(2),

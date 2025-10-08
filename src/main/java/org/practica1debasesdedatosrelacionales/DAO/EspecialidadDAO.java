@@ -21,7 +21,7 @@ public class EspecialidadDAO {
     public void connect() throws SQLException, IOException {
         Properties configuration = new Properties();
 
-        configuration.load(R.getProperties("database.properties"));
+        configuration.load(R.getProperties("databaseMongoDB.properties"));
         String host = configuration.getProperty("host");
         String port = configuration.getProperty("port");
         String name = configuration.getProperty("name");

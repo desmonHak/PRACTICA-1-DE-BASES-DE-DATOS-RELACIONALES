@@ -2,16 +2,13 @@ package org.practica1debasesdedatosrelacionales.Controller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.StageStyle;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.practica1debasesdedatosrelacionales.DAO.PacienteDAO;
-import org.practica1debasesdedatosrelacionales.DAO.ProcessResulSet;
+import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLUnknownException;
 import org.practica1debasesdedatosrelacionales.InitWindows;
@@ -22,10 +19,8 @@ import org.practica1debasesdedatosrelacionales.util.AlertsGlobal;
 import org.practica1debasesdedatosrelacionales.util.R;
 
 import java.io.IOException;
-import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ResourceBundle;
 
 public class loginController {
     public TextField fieldEmail;
@@ -38,7 +33,7 @@ public class loginController {
     public void onActionLogin(ActionEvent actionEvent) throws SQLException, IOException {
 
         // realizamos mi lambda personalizada de como obtener los datos
-        ProcessResulSet process = (ResultSet rs)->{
+        ProcessSelectData<ResultSet> process = (ResultSet rs)->{
             if (rs == null) {
                 return null;
             } else {

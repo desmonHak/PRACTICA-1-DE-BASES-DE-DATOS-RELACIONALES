@@ -61,10 +61,24 @@
           <version>9.4.0</version>
       </dependency>
 
+
+      <!-- Para trabajar con SHA256 -->
       <dependency>
           <groupId>commons-codec</groupId>
           <artifactId>commons-codec</artifactId>
           <version>1.16.0</version>
+      </dependency>
+
+      <!-- Para trabajar con MongoDB -->
+      <dependency>
+          <groupId>org.mongodb</groupId>
+          <artifactId>mongodb-driver</artifactId>
+          <version>3.12.11</version>
+      </dependency>
+      <dependency>
+          <groupId>com.google.code.gson</groupId>
+          <artifactId>gson</artifactId>
+          <version>2.9.1</version>
       </dependency>
   </dependencies>
 
