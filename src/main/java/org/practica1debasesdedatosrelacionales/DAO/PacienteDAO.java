@@ -14,7 +14,7 @@ import java.util.Properties;
 public class PacienteDAO {
 
     private Connection conn;
-    public void connect() throws SQLException, IOException {
+    public void connect(Class<?> managerDBClass) throws SQLException, IOException {
         //load_especialidades(); // cargamos todas las especialidades
 
         Properties configuration = new Properties();

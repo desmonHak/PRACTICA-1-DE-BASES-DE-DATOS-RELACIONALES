@@ -103,7 +103,12 @@ class ConnectionMongoDBSingletonTest {
 
         ConnectionMongoDBSingleton.modo_debug = true;
 
-        List<String> campos = List.of("dni", "numero_cita", "fecha_cita", "especialidad");
+        List<String> campos = new ArrayList<>();
+        campos.add("dni");
+        campos.add("numero_cita");
+        campos.add("fecha_cita");
+        campos.add("especialidad");
+
         ConditionsDB condicion1 = new ConditionsDB("dni", ConditionsDBOperators.EQUALS, "48901940F");
 
         mongoDBManager.setDataBaseName("centro_medico");

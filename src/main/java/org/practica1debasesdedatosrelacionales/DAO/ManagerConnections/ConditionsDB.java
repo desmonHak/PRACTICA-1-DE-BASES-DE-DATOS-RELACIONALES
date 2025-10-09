@@ -10,7 +10,7 @@ public class ConditionsDB {
     private String field;
     private Object value;
 
-    ConditionsDB(String field, ConditionsDBOperators condition, Object value) {
+    public ConditionsDB(String field, ConditionsDBOperators condition, Object value) {
         this.condition = condition;
         this.field = field;
 
@@ -74,6 +74,6 @@ public class ConditionsDB {
 
     @Override
     public String toString() {
-        return "%s %s %s".formatted(this.field, this.condition, check_type_data(this.value));
+        return String.format("%s %s %s", this.field, this.condition, check_type_data(this.value));
     }
 }

@@ -38,9 +38,8 @@ public class DNI {
                 this.number % letras.length());
 
         if (letter != supuesta_letra) {
-            throw new DniException("El DNI no es valido, la letra ingresada es %c, pero deberia ser %c".formatted(
-                    supuesta_letra, this.letter
-            ));
+            throw new DniException(String.format("El DNI no es valido, la letra ingresada es %c, pero deberia ser %c", supuesta_letra, this.letter));
+
         }
     }
 
@@ -61,7 +60,7 @@ public class DNI {
     }
 
     String getDNI() {
-        return "%d%c".formatted(this.number, this.letter);
+        return String.format("%d%c", this.number, this.letter);
     }
 
     @Override

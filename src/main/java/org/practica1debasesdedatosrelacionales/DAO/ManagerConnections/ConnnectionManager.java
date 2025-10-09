@@ -7,33 +7,33 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 
-public interface ConnnectionManager<T, TypeDataSelect> {
+public abstract class ConnnectionManager<T, TypeDataSelect> {
 
-    T getNewConection() throws SQLException, IOException;
-    void closeConection() throws SQLException;
-    T connect();
-    void update(
+    abstract T getNewConection() throws SQLException, IOException;
+    abstract void closeConection() throws SQLException;
+    abstract T connect();
+    abstract void update(
             UpdateDB<T> update_process,
             String table,
             HashMap<String, Object> data,
             List<ConditionsDB> condiciones
     ) throws SQLException;
 
-    void insert(
+    abstract void insert(
             InsertDB<T> update_process,
             String Table,
             HashMap<String, Object> data
     ) throws SQLException;
 
-    Object select(
+    public abstract Object select(
             SelectDB<T, TypeDataSelect> update_process,
-            List<String>select_fields,
+            List<String> select_fields,
             String table,
             List<ConditionsDB> condiciones,
             ProcessSelectData<TypeDataSelect> process
     ) throws SQLException;
 
-    void delete(
+    abstract void delete(
             DeleteDB<T> update_process,
             String table,
             List<ConditionsDB> condiciones

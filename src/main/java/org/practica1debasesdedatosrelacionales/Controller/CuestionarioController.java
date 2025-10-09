@@ -26,6 +26,7 @@ import org.practica1debasesdedatosrelacionales.util.R;
 import org.practica1debasesdedatosrelacionales.util.UInt32_t;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -143,7 +144,7 @@ public class CuestionarioController implements Initializable {
     void updateTable() {
 
         try {
-            citasDB.connect();
+            citasDB.connect(InitWindows.managerDBClass);
             try {
                 ObservableList<Cita> citas =
                         FXCollections.observableList(
@@ -154,18 +155,11 @@ public class CuestionarioController implements Initializable {
                 // error al obtener los datos
                 throw new RuntimeException(e);
             }
-        } catch (SQLException | IOException e) {
+        } catch (SQLException | IOException | NoSuchMethodException | InvocationTargetException |
+                 InstantiationException | IllegalAccessException e) {
             // error al conectar la base de datos
             throw new RuntimeException(e);
-        } finally {
-            try {
-                citasDB.desconnect();
-            } catch (SQLException e) {
-                // error al cerrar la conexion
-                throw new RuntimeException(e);
-            }
         }
-
         tableCitas.setRowFactory( tv -> {
             TableRow<Cita> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
@@ -196,12 +190,12 @@ public class CuestionarioController implements Initializable {
         textFieldDNI.setText(loginController.paciente_login.getDni().toString());
         fieldDateCita.setValue(LocalDate.now());
         try {
-            citasDB.connect();
+            citasDB.connect(InitWindows.managerDBClass);
             int n_cita = citasDB.getMaxNumeroCita(); // primero hay que conectarse;
             // cambiar el campo del numero de cita, con el valor obtenido de la DB
             textFieldNumeroCita.setText(String.valueOf(n_cita));
-            citasDB.desconnect();
-        } catch (SQLException | IOException e) {
+        } catch (SQLException | IOException | InvocationTargetException | NoSuchMethodException |
+                 InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -260,7 +254,7 @@ public class CuestionarioController implements Initializable {
                             // obtener el DNI del usuario validando si es un DNI
                             DNI dni = new DNI(textFieldDNI.getText());
                             try {
-                                pacienteDB.connect();
+                                pacienteDB.connect(InitWindows.managerDBClass);
                                 // obtenemos el paciente a traves del DNI si todo fue bieb
                                 paciente = pacienteDB.select(dni);
                                 pacienteDB.desconnect();
@@ -320,8 +314,8 @@ public class CuestionarioController implements Initializable {
         InitWindows.p_stage.show();
     }
 
-    public void onActionAddCita(ActionEvent actionEvent) throws SQLException, IOException {
-        citasDB.connect();
+    public void onActionAddCita(ActionEvent actionEvent) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+        citasDB.connect(InitWindows.managerDBClass);
         try {
             // obtener el numero de cita + 1
             int n_cita = citasDB.getMaxNumeroCita() + 1; // primero hay que conectarse;
@@ -341,34 +335,28 @@ public class CuestionarioController implements Initializable {
 
             // insertar en la base de datos
             citasDB.insert(cita);
-        } catch (DniException e) {
+        } catch (DniException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             AlertsGlobal.invokeAlert("Error", e.getMessage());
-        }
-        finally {
-            citasDB.desconnect();
         }
 
         // actualizar la tabla de la DB para mostrar el nuevo campo ingresada
         updateTable();
     }
 
-    public void onActionDeleteCita(ActionEvent actionEvent) throws SQLException, IOException {
+    public void onActionDeleteCita(ActionEvent actionEvent) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // si no escogio una cita, mostrar error
         if (cita_now != null) {
-            citasDB.connect();
-            try {
-                // eliminar la cita seleccionado
-                citasDB.delete(loginController.paciente_login, cita_now);
-            } finally {
-                citasDB.desconnect();
-            }
+            citasDB.connect(InitWindows.managerDBClass);
+            // eliminar la cita seleccionado
+            citasDB.delete(loginController.paciente_login, cita_now);
+
             updateTable();
         }  else {
             AlertsGlobal.invokeAlert("Error", "Debe selecionar una cita en la tabla");
         }
     }
 
-    public void onActionModificarCita(ActionEvent actionEvent) throws SQLException, IOException {
+    public void onActionModificarCita(ActionEvent actionEvent) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         /**
          * si la cita no fue seleccionada mostrar error
          */
@@ -376,13 +364,10 @@ public class CuestionarioController implements Initializable {
             cita_now.setEspecialidad(textFieldEspecialidad.getValue());
             cita_now.setFecha_cita(Date.valueOf(fieldDateCita.getValue()));
 
-            citasDB.connect();
-            try {
-                // actualizar la cita
-                citasDB.update(cita_now);
-            } finally{
-                citasDB.desconnect();
-            }
+            citasDB.connect(InitWindows.managerDBClass);
+            // actualizar la cita
+            citasDB.update(cita_now);
+
             // actualizar tabla
             updateTable();
         } else {

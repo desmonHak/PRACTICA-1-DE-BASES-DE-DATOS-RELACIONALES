@@ -7,6 +7,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.practica1debasesdedatosrelacionales.Controller.loginController;
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
 import org.practica1debasesdedatosrelacionales.util.R;
 
 import java.io.IOException;
@@ -15,6 +16,9 @@ import java.net.URL;
 public class InitWindows extends Application {
     public static Stage p_stage;
     public static Scene loginScene;
+
+    // por defecto se usara mongo DB
+    public static Class<?> managerDBClass = ConnectionMongoDBSingleton.class;
 
     private double xOffset = 0;
     private double yOffset = 0;

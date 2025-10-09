@@ -34,4 +34,4 @@ INSERT INTO Especialidad (nombre) VALUES
     ("Nutricion"),
     ("Anestesiologia");
 
-select * from Especialidad;
+select * from Especialidad where True;

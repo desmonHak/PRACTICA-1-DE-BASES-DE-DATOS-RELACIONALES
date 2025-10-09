@@ -20,14 +20,14 @@ import java.util.Properties;
 
 public class EspecialidadDAO {
     private Object conn;
-    public Object instance_mangaer;
-    public Class<?> mangaer;
+    public Object instance_manager;
+    public Class<?> manager;
 
     public Object getConn() {
         return conn;
     }
     public static boolean modo_debug = false;
-    private static void print_debug(Object data) {
+    static void print_debug(Object data) {
         if (modo_debug) {
             System.out.println(data);
         }
@@ -38,20 +38,20 @@ public class EspecialidadDAO {
                 manager == ConnectionMongoDBSingleton.class ||
                         manager == ConnectionMySQLDBSingleton.class) {
             // inicializar con mongoDB o MySQL
-            this.mangaer = manager;
+            this.manager = manager;
 
             Method metodo = manager.getMethod("getInstance");
             print_debug("llamando a: " + metodo);
 
             // creamos una instancia de la clase recibida
-            this.instance_mangaer = manager.getDeclaredConstructor().newInstance();
+            this.instance_manager = manager.getDeclaredConstructor().newInstance();
 
             /**
              * invocamos el metodo getInstance que tiene la clase instanciada,
              * en caso de ser ConnectionMongoDBSingleton devuelve una instancia de MongoClient,
              * si es ConnectionMySQLDBSingleton devuelve una instancia de Connection
              */
-            conn = metodo.invoke(this.instance_mangaer);
+            conn = metodo.invoke(this.instance_manager);
         } else {
             System.out.println("La clase no se reconoce: " + manager);
         }
@@ -68,8 +68,8 @@ public class EspecialidadDAO {
 
         List<String> campos = List.of("nombre");
 
-        if (this.mangaer == ConnectionMongoDBSingleton.class) {
-            instanceMongo = (ConnectionMongoDBSingleton) this.instance_mangaer;
+        if (this.manager == ConnectionMongoDBSingleton.class) {
+            instanceMongo = (ConnectionMongoDBSingleton) this.instance_manager;
 
             instanceMongo.setDataBaseName("centro_medico");
 
@@ -92,8 +92,8 @@ public class EspecialidadDAO {
             );
             return (ArrayList<String>)resultados;
 
-        } else if (this.mangaer == ConnectionMySQLDBSingleton.class) {
-            instanceMySQL = (ConnectionMySQLDBSingleton) this.instance_mangaer;
+        } else if (this.manager == ConnectionMySQLDBSingleton.class) {
+            instanceMySQL = (ConnectionMySQLDBSingleton) this.instance_manager;
 
             Object resultados = instanceMySQL.select(
                     instanceMySQL.select_element,
@@ -114,7 +114,7 @@ public class EspecialidadDAO {
             );
             return (ArrayList<String>)resultados;
         } else {
-            throw new TypeDataUnknown("La clase %s no es valida".formatted(this.mangaer));
+            throw new TypeDataUnknown("La clase %s no es valida".formatted(this.manager));
         }
 
     }

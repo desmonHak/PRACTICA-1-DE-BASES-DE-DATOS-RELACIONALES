@@ -63,7 +63,7 @@ public class loginController {
         };
 
         PacienteDAO conn = new PacienteDAO();
-        conn.connect();
+        conn.connect(InitWindows.managerDBClass);
 
         String error_msg = "El usuario no existe.";
         try {

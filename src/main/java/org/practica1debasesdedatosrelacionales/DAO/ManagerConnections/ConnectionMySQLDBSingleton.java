@@ -10,7 +10,7 @@ import java.util.*;
 
 import static org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB.check_type_data;
 
-public class ConnectionMySQLDBSingleton implements ConnnectionManager<Connection, ResultSet> {
+public class ConnectionMySQLDBSingleton extends ConnnectionManager<Connection, ResultSet> {
     private static Connection instance = null;
     public static boolean modo_debug = false;
 
@@ -64,7 +64,7 @@ public class ConnectionMySQLDBSingleton implements ConnnectionManager<Connection
             index_field++;
         }
 
-        String sql = "UPDATE %s SET %s WHERE %s".formatted(table, fields.toString(),
+        String sql = String.format("UPDATE %s SET %s WHERE %s", table, fields.toString(),
                 build_data_conditions(conditions));
         print_debug(sql);
         PreparedStatement ps = connection.prepareStatement(sql);
@@ -90,7 +90,7 @@ public class ConnectionMySQLDBSingleton implements ConnnectionManager<Connection
             index++;
         }
 
-        String sql = "INSERT INTO %s (%s) VALUES (%s);".formatted(
+        String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
                 table, campos.toString(), valores.toString()
         );
         print_debug(sql);
@@ -112,7 +112,7 @@ public class ConnectionMySQLDBSingleton implements ConnnectionManager<Connection
             whereClause = build_data_conditions(condiciones);
         }
 
-        String sql = "SELECT %s FROM %s WHERE %s;".formatted(campos, table, whereClause);
+        String sql = String.format("SELECT %s FROM %s WHERE %s;", campos, table, whereClause);
         print_debug(sql);
         PreparedStatement ps = connection.prepareStatement(sql);
 
@@ -128,7 +128,7 @@ public class ConnectionMySQLDBSingleton implements ConnnectionManager<Connection
         String whereClause = build_data_conditions(condiciones);
 
         // Generar la sentencia SQL DELETE
-        String sql = "DELETE FROM %s WHERE %s".formatted(table, whereClause);
+        String sql = String.format("DELETE FROM %s WHERE %s", table, whereClause);
         print_debug(sql);
 
         PreparedStatement ps = connection.prepareStatement(sql);

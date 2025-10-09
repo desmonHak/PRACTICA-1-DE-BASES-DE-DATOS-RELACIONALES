@@ -23,7 +23,7 @@ import java.util.Properties;
  * Usaremos el patron Singleton para tener una unica instancia de
  * conexion
  */
-public class ConnectionMongoDBSingleton implements ConnnectionManager<MongoClient, Iterable<Document>> {
+public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, Iterable<Document>> {
 
     /**
      * variable estatica que almacenara la unica existencia que habra
@@ -217,9 +217,9 @@ public class ConnectionMongoDBSingleton implements ConnnectionManager<MongoClien
             int port = Integer.parseInt(properties.getProperty("port"));
 
             return new MongoClient(
-                    new MongoClientURI("mongodb://%s:%s@%s:%d/?authSource=admin".formatted(
-                            username, password, host, port
-                    ))
+                    new MongoClientURI(String.format("mongodb://%s:%s@%s:%d/?authSource=admin",
+                            username, password, host, port)
+                    )
             );
         } catch (Exception e) {
             System.out.println("Conexion Fallida");
