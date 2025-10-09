@@ -51,8 +51,8 @@ public class ConnectionMongoDBSingleton implements ConnnectionManager<MongoClien
         this.dataBaseName = dataBaseName;
     }
 
-    ConnectionMongoDBSingleton() {}
-    ConnectionMongoDBSingleton(String dataBaseName) {
+    public ConnectionMongoDBSingleton() {}
+    public ConnectionMongoDBSingleton(String dataBaseName) {
         this.dataBaseName = dataBaseName;
     }
 
@@ -171,10 +171,13 @@ public class ConnectionMongoDBSingleton implements ConnnectionManager<MongoClien
         MongoDatabase database = connection.getDatabase(this.dataBaseName);
         MongoCollection<Document> collection = database.getCollection(table);
 
+        // un filtro vacio por defecto es como poner  "db["Especialidad"].find({})"
+        Document filtro = new Document();
         // Construir filtro BSON a partir de condiciones
-        Document filtro = buildFilterFromConditions(condiciones);
-
-        print_debug("Filtro de consulta: " + filtro.toJson());
+        if (condiciones != null) {
+            filtro = buildFilterFromConditions(condiciones);
+            print_debug("Filtro de consulta: " + filtro.toJson());
+        }
 
         // Obtener cursor con documentos que cumplen el filtro
         Iterable<Document> documentos = collection.find(filtro);

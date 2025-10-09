@@ -104,8 +104,13 @@ public class ConnectionMySQLDBSingleton implements ConnnectionManager<Connection
         // Construir la cadena de campos a seleccionar
         String campos = String.join(", ", (List<String>) select_fields);
 
-        // Construir la parte WHERE basada en las condiciones
-        String whereClause = build_data_conditions(condiciones);
+        // si no hay condiciones se indicara where True, que siempre sera verdadero y no aplicara filtro
+        String whereClause = "True";
+        // si no hay condiciones
+        if (condiciones != null) {
+            // Construir la parte WHERE basada en las condiciones
+            whereClause = build_data_conditions(condiciones);
+        }
 
         String sql = "SELECT %s FROM %s WHERE %s;".formatted(campos, table, whereClause);
         print_debug(sql);

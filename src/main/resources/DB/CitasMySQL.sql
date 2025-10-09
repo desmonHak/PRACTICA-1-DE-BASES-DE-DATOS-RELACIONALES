@@ -27,6 +27,6 @@ INSERT INTO Citas (
                                      ('44789012G', 8, '2025-11-05', 'Urologia'),
                                      ('43890123H', 9, '2025-11-10', 'Cardiologia'),
                                      ('42901234J', 10, '2025-11-15', 'Cirugia'),
-                                     ('41912345K', 11, '2025-11-18', 'Radiografia');;
+                                     ('41912345K', 11, '2025-11-18', 'Radiografia');
     
 Select * from citas;

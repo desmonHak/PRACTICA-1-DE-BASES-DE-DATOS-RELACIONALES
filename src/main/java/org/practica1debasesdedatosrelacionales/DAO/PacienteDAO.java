@@ -11,13 +11,11 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 
-import static org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO.load_especialidades;
-
 public class PacienteDAO {
 
     private Connection conn;
     public void connect() throws SQLException, IOException {
-        load_especialidades(); // cargamos todas las especialidades
+        //load_especialidades(); // cargamos todas las especialidades
 
         Properties configuration = new Properties();
 
