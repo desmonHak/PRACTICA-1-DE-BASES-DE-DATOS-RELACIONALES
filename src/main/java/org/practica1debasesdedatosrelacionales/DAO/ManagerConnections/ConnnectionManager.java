@@ -9,17 +9,17 @@ import java.util.List;
 
 public abstract class ConnnectionManager<T, TypeDataSelect> {
 
-    abstract T getNewConection() throws SQLException, IOException;
-    abstract void closeConection() throws SQLException;
-    abstract T connect();
-    abstract void update(
+    public abstract T getNewConection() throws SQLException, IOException;
+    public abstract void closeConection() throws SQLException;
+    public abstract T connect();
+    public abstract void update(
             UpdateDB<T> update_process,
             String table,
             HashMap<String, Object> data,
             List<ConditionsDB> condiciones
     ) throws SQLException;
 
-    abstract void insert(
+    public abstract void insert(
             InsertDB<T> update_process,
             String Table,
             HashMap<String, Object> data
@@ -33,7 +33,7 @@ public abstract class ConnnectionManager<T, TypeDataSelect> {
             ProcessSelectData<TypeDataSelect> process
     ) throws SQLException;
 
-    abstract void delete(
+    public abstract void delete(
             DeleteDB<T> update_process,
             String table,
             List<ConditionsDB> condiciones

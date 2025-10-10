@@ -20,7 +20,7 @@ db.Citas.insertMany([
         especialidad: "Urologia"
     },
     {
-        dni: "50123456A",
+        dni: "50123456Q",
         numero_cita: 4,
         fecha_cita: ISODate("2025-10-25T00:00:00Z"),
         especialidad: "Radiografia"

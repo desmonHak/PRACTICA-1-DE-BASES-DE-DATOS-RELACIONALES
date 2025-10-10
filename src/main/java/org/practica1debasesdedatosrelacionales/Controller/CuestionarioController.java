@@ -16,6 +16,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 
 import org.practica1debasesdedatosrelacionales.DAO.CitaDAO;
+import org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO;
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDBOperators;
 import org.practica1debasesdedatosrelacionales.DAO.PacienteDAO;
 import org.practica1debasesdedatosrelacionales.Exceptions.DniException;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
@@ -58,9 +61,12 @@ public class CuestionarioController implements Initializable {
     // almacena la cita seleccionada en la tabla
     private Cita cita_now;
 
-    private final CitaDAO citasDB = new CitaDAO();
+    private final CitaDAO citasDB = new CitaDAO(InitWindows.managerDBClass);
     private double xOffset = 0;
     private double yOffset = 0;
+
+    public CuestionarioController() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    }
 
     // solo repintar si el zoom fue cambiado
     void paint_id_draw(int blockSize) {
@@ -144,7 +150,6 @@ public class CuestionarioController implements Initializable {
     void updateTable() {
 
         try {
-            citasDB.connect(InitWindows.managerDBClass);
             try {
                 ObservableList<Cita> citas =
                         FXCollections.observableList(
@@ -155,8 +160,8 @@ public class CuestionarioController implements Initializable {
                 // error al obtener los datos
                 throw new RuntimeException(e);
             }
-        } catch (SQLException | IOException | NoSuchMethodException | InvocationTargetException |
-                 InstantiationException | IllegalAccessException e) {
+        } catch (IOException |
+                 IllegalAccessException e) {
             // error al conectar la base de datos
             throw new RuntimeException(e);
         }
@@ -190,12 +195,11 @@ public class CuestionarioController implements Initializable {
         textFieldDNI.setText(loginController.paciente_login.getDni().toString());
         fieldDateCita.setValue(LocalDate.now());
         try {
-            citasDB.connect(InitWindows.managerDBClass);
             int n_cita = citasDB.getMaxNumeroCita(); // primero hay que conectarse;
             // cambiar el campo del numero de cita, con el valor obtenido de la DB
             textFieldNumeroCita.setText(String.valueOf(n_cita));
-        } catch (SQLException | IOException | InvocationTargetException | NoSuchMethodException |
-                 InstantiationException | IllegalAccessException e) {
+        } catch (SQLException |
+                 IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
@@ -232,8 +236,20 @@ public class CuestionarioController implements Initializable {
          * obtener todas las especialidades de la base de datos
          * y añadirlas en el desplegable
          */
-        for(Especialidad espe : Especialidad.values()) {
-            textFieldEspecialidad.getItems().add(espe);
+        EspecialidadDAO espe = null;
+        try {
+            System.out.println(InitWindows.managerDBClass);
+            espe = new EspecialidadDAO(InitWindows.managerDBClass);
+        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+            System.out.println("No se pudo instanciar la clase EspecialidadDAO con " + InitWindows.managerDBClass);
+            throw new RuntimeException(e);
+        }
+        try {
+            for(String especialidad : espe.load_especialidades()) {
+                textFieldEspecialidad.getItems().add(new Especialidad(especialidad));
+            }
+        } catch (SQLException | IOException e) {
+            throw new RuntimeException(e);
         }
 
         // actualizar los datos de la interfaz con los datos del usuario
@@ -248,17 +264,21 @@ public class CuestionarioController implements Initializable {
                     if (event.getCode() == KeyCode.ENTER) {
                         // si se presiona enter, buscamos al paciente a traves del DNI
                         System.out.println("Enter presionado (sceneProperty listener)");
-                        PacienteDAO pacienteDB = new PacienteDAO();
+                        PacienteDAO pacienteDB = null;
+                        try {
+                            pacienteDB = new PacienteDAO(InitWindows.managerDBClass);
+                        } catch (SQLException | IOException | NoSuchMethodException | InvocationTargetException |
+                                 IllegalAccessException | InstantiationException e) {
+                            throw new RuntimeException(e);
+                        }
                         Paciente paciente = null;
                         try {
                             // obtener el DNI del usuario validando si es un DNI
                             DNI dni = new DNI(textFieldDNI.getText());
                             try {
-                                pacienteDB.connect(InitWindows.managerDBClass);
                                 // obtenemos el paciente a traves del DNI si todo fue bieb
-                                paciente = pacienteDB.select(dni);
-                                pacienteDB.desconnect();
-                            } catch (SQLException | IOException e) {
+                                paciente = pacienteDB.select(new ConditionsDB("dni", ConditionsDBOperators.EQUALS, dni.toString()));
+                            } catch (SQLException | IllegalAccessException e) {
                                 throw new RuntimeException(e);
                             }
                             if (paciente != null) {
@@ -315,10 +335,10 @@ public class CuestionarioController implements Initializable {
     }
 
     public void onActionAddCita(ActionEvent actionEvent) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        citasDB.connect(InitWindows.managerDBClass);
         try {
             // obtener el numero de cita + 1
             int n_cita = citasDB.getMaxNumeroCita() + 1; // primero hay que conectarse;
+            textFieldNumeroCita.setText(String.valueOf(n_cita));
             Especialidad especialidad = textFieldEspecialidad.getValue();
             if (especialidad == null) {
                 AlertsGlobal.invokeAlert("Error", "Debe seleccionar una especialidad");
@@ -346,9 +366,8 @@ public class CuestionarioController implements Initializable {
     public void onActionDeleteCita(ActionEvent actionEvent) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         // si no escogio una cita, mostrar error
         if (cita_now != null) {
-            citasDB.connect(InitWindows.managerDBClass);
             // eliminar la cita seleccionado
-            citasDB.delete(loginController.paciente_login, cita_now);
+            citasDB.delete(cita_now);
 
             updateTable();
         }  else {
@@ -364,7 +383,6 @@ public class CuestionarioController implements Initializable {
             cita_now.setEspecialidad(textFieldEspecialidad.getValue());
             cita_now.setFecha_cita(Date.valueOf(fieldDateCita.getValue()));
 
-            citasDB.connect(InitWindows.managerDBClass);
             // actualizar la cita
             citasDB.update(cita_now);
 

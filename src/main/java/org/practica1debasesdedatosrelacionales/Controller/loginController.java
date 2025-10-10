@@ -7,6 +7,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDBOperators;
 import org.practica1debasesdedatosrelacionales.DAO.PacienteDAO;
 import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
@@ -19,8 +21,10 @@ import org.practica1debasesdedatosrelacionales.util.AlertsGlobal;
 import org.practica1debasesdedatosrelacionales.util.R;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.NoSuchElementException;
 
 public class loginController {
     public TextField fieldEmail;
@@ -30,47 +34,15 @@ public class loginController {
     private double xOffset = 0;
     private double yOffset = 0;
 
-    public void onActionLogin(ActionEvent actionEvent) throws SQLException, IOException {
+    public void onActionLogin(ActionEvent actionEvent) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
 
-        // realizamos mi lambda personalizada de como obtener los datos
-        ProcessSelectData<ResultSet> process = (ResultSet rs)->{
-            if (rs == null) {
-                return null;
-            } else {
-                try {
-                    SHA256 hash_pass = new SHA256(rs.getString(4), true);
-                    System.out.println("Contraseña DB almacenada : " + hash_pass);
-                    return new Paciente(
-                            new DNI(rs.getString(1)),
-                            rs.getString(2),
-                            rs.getString(3),
-                            hash_pass,
-                            rs.getString(5),
-                            rs.getString(6)
-                    );
-                } catch (SQLException e) {
-                    String sqlState = e.getSQLState();
-                    System.out.println("SQLState: " + sqlState);
-                    if (sqlState.equals("S1000")) {
-                        System.out.println("No se encontro estos datos, salida: " + e.getMessage());
-                        throw new SQLDataNotFound("No se encontro estos datos" + e.getMessage());
-                    } else {
-                        System.out.println("Error SQL desconocido/no contemplado: " + e.getMessage());
-                        throw new SQLUnknownException(e);
-                    }
-                }
-            }
-        };
-
-        PacienteDAO conn = new PacienteDAO();
-        conn.connect(InitWindows.managerDBClass);
+        PacienteDAO conn = new PacienteDAO(InitWindows.managerDBClass);
 
         String error_msg = "El usuario no existe.";
         try {
             // si se produce un error tipo SQLDataNotFound, entonces el correo no esta registrado
-            Paciente paciente = conn.select("email", fieldEmail.getText(), process);
+            Paciente paciente = conn.select(new ConditionsDB("email", ConditionsDBOperators.EQUALS,  fieldEmail.getText()));
 
-            conn.desconnect();
 
             /**
              * obtenemos la clase SHA256 del paciente y accedemos al mectodo check para averiguar
@@ -111,9 +83,11 @@ public class loginController {
                 System.out.println(DigestUtils.sha256Hex(fieldPassword.getText()));
                 throw new SQLDataNotFound(error_msg); // generar un error, las credenciales no son correctas
             }
-        } catch (SQLDataNotFound e) {
+        } catch (SQLDataNotFound | NoSuchElementException e) {
             // mostrar el error
             AlertsGlobal.invokeAlert("Error", error_msg);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
 
     }

@@ -4,7 +4,7 @@ CREATE DATABASE IF NOT EXISTS PRACTICA_1_DE_BASES_DE_DATOS_RELACIONALES;
 -- indicar que se usa la nueva DB
 USE PRACTICA_1_DE_BASES_DE_DATOS_RELACIONALES;
 
--- delete from Paciente where DNI ='';
+-- delete from Paciente where dni ='';
 -- DROP TABLE Especialidad;
 
 -- crear la tabla para Especialidad

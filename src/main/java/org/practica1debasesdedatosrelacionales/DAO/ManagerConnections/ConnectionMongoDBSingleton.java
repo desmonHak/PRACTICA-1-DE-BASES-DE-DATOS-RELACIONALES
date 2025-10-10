@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -150,7 +151,24 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
 
             // Convertir el HashMap a documento BSON
             HashMap<String, Object> data = (HashMap<String, Object>) objects_insert;
-            Document document = new Document(data);
+
+            // es necesario convertir los objetos de tipo sql.Date de my sql en objetos
+            // de tipo util.Date, aunque una extiende de otra, no hacer esto
+            // hara que se genere un error
+            Map<String, Object> convertedData = new HashMap<>();
+            for (Map.Entry<String, Object> entry : data.entrySet()) {
+                Object value = entry.getValue();
+
+                if (value instanceof java.sql.Date sqlDate) {
+                    // Convertir a java.util.Date
+                    convertedData.put(entry.getKey(), new java.util.Date(sqlDate.getTime()));
+                } else {
+                    convertedData.put(entry.getKey(), value);
+                }
+            }
+
+
+            Document document = new Document(convertedData);
 
             // Insertar el documento en la colección
             collection.insertOne(document);

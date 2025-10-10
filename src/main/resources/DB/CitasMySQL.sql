@@ -9,16 +9,16 @@ USE PRACTICA_1_DE_BASES_DE_DATOS_RELACIONALES;
 
 -- crear la tabla para Citas
 CREATE TABLE IF NOT EXISTS Citas (
-    DNI 			VARCHAR(9),
+    dni 			VARCHAR(9),
     numero_cita 	int not null PRIMARY KEY,
     fecha_cita 		date not null,
     especialidad	text not null
 );
 
 INSERT INTO Citas (
-	DNI, numero_cita, 
+	dni, numero_cita, 
     fecha_cita, especialidad) VALUES ('48901940F', 1, '2025-10-20', 'Cirugia'),
-                                     ('50123456A', 2, '2025-10-22', 'Cardiologia'),
+                                     ('50123456Q', 2, '2025-10-22', 'Cardiologia'),
                                      ('49234567B', 3, '2025-10-23', 'Urologia'),
                                      ('48345678C', 4, '2025-10-25', 'Radiografia'),
                                      ('47456789D', 5, '2025-10-27', 'Cardiologia'),

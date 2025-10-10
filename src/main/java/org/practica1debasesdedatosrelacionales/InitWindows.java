@@ -7,24 +7,37 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.practica1debasesdedatosrelacionales.Controller.loginController;
+import org.practica1debasesdedatosrelacionales.DAO.CitaDAO;
+import org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMySQLDBSingleton;
+import org.practica1debasesdedatosrelacionales.DAO.PacienteDAO;
 import org.practica1debasesdedatosrelacionales.util.R;
 
 import java.io.IOException;
 import java.net.URL;
 
 public class InitWindows extends Application {
+
     public static Stage p_stage;
     public static Scene loginScene;
 
     // por defecto se usara mongo DB
-    public static Class<?> managerDBClass = ConnectionMongoDBSingleton.class;
+    public static Class<?> managerDBClass = ConnectionMySQLDBSingleton.class;
 
     private double xOffset = 0;
     private double yOffset = 0;
 
     @Override
     public void start(Stage stage) throws IOException {
+
+        // modo depuracion:
+        ConnectionMongoDBSingleton.modo_debug = true;
+        ConnectionMySQLDBSingleton.modo_debug = true;
+        EspecialidadDAO.modo_debug = true;
+        CitaDAO.modo_debug = true;
+        PacienteDAO.modo_debug = true;
+
         p_stage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader();
         URL url = R.getUI("login.fxml");

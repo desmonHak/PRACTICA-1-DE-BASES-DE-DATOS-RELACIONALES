@@ -1,5 +1,6 @@
 package org.practica1debasesdedatosrelacionales.DAO;
 
+import com.mongodb.MongoClient;
 import org.bson.Document;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMySQLDBSingleton;
@@ -33,7 +34,7 @@ public class EspecialidadDAO {
         }
     }
 
-    public void connect(Class<?> manager) throws SQLException, IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public EspecialidadDAO(Class<?> manager) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (
                 manager == ConnectionMongoDBSingleton.class ||
                         manager == ConnectionMySQLDBSingleton.class) {
@@ -53,28 +54,22 @@ public class EspecialidadDAO {
              */
             conn = metodo.invoke(this.instance_manager);
         } else {
-            System.out.println("La clase no se reconoce: " + manager);
+            throw new TypeDataUnknown("La clase SGDB: " + manager + " no se reconoce");
         }
-    }
-    public void desconnect() throws SQLException {
-        ((Connection)conn).close();
     }
 
     // inicializa las especialidades obteniendolas de la DB
     public List<String> load_especialidades() throws SQLException, IOException {
 
-        ConnectionMongoDBSingleton instanceMongo = null;
-        ConnectionMySQLDBSingleton instanceMySQL = null;
 
         List<String> campos = List.of("nombre");
 
         if (this.manager == ConnectionMongoDBSingleton.class) {
-            instanceMongo = (ConnectionMongoDBSingleton) this.instance_manager;
 
-            instanceMongo.setDataBaseName("centro_medico");
+            ((ConnectionMongoDBSingleton)this.instance_manager).setDataBaseName("centro_medico");
 
-            Object resultados = instanceMongo.select(
-                    instanceMongo.select_element,
+            Object resultados = ((ConnectionMongoDBSingleton)this.instance_manager).select(
+                    ((ConnectionMongoDBSingleton)this.instance_manager).select_element,
                     campos,
                     "Especialidad",
                     null, // sin condiciones
@@ -93,7 +88,7 @@ public class EspecialidadDAO {
             return (ArrayList<String>)resultados;
 
         } else if (this.manager == ConnectionMySQLDBSingleton.class) {
-            instanceMySQL = (ConnectionMySQLDBSingleton) this.instance_manager;
+            ConnectionMySQLDBSingleton instanceMySQL = (ConnectionMySQLDBSingleton) this.instance_manager;
 
             Object resultados = instanceMySQL.select(
                     instanceMySQL.select_element,
