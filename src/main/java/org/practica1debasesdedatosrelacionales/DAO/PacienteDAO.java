@@ -1,5 +1,10 @@
 package org.practica1debasesdedatosrelacionales.DAO;
 
+import org.bson.Document;
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.*;
+import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.InsertDB;
+import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
+import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.SelectDB;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLUnknownException;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.TypeDataUnknown;
@@ -7,126 +12,167 @@ import org.practica1debasesdedatosrelacionales.domain.*;
 import org.practica1debasesdedatosrelacionales.util.R;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
-
-import static org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO.load_especialidades;
 
 public class PacienteDAO {
 
-    private Connection conn;
-    public void connect() throws SQLException, IOException {
-        load_especialidades(); // cargamos todas las especialidades
+    private Object conn;
+    public Object instance_manager;
+    public Class<?> manager;
 
-        Properties configuration = new Properties();
-
-        configuration.load(R.getProperties("database.properties"));
-        String host = configuration.getProperty("host");
-        String port = configuration.getProperty("port");
-        String name = configuration.getProperty("name");
-        String username = configuration.getProperty("username");
-        String password = configuration.getProperty("password");
-
-        conn = DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + name + "?serverTimezone=UTC",
-                username, password);
+    public Object getConn() {
+        return conn;
     }
-    public void desconnect() throws SQLException {
-        conn.close();
+    public static boolean modo_debug = false;
+    static void print_debug(Object data) {
+        if (modo_debug) {
+            System.out.println(data);
+        }
     }
 
+    public PacienteDAO(Class<?> manager) throws SQLException, IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        if (
+                manager == ConnectionMongoDBSingleton.class ||
+                        manager == ConnectionMySQLDBSingleton.class) {
+            // inicializar con mongoDB o MySQL
+            this.manager = manager;
 
-    public void insert(Paciente paciente) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO Paciente (email, password, DNI, nombre, direccion, telefono) VALUES (?, ?, ?, ?, ?, ?);");
-        ps.setString(1, paciente.getEmail());
-        ps.setString(2, paciente.getHashClass().getHash());
-        ps.setString(3, paciente.getDni().toString());
-        ps.setString(4, paciente.getNombre());
-        ps.setString(5, paciente.getDireccion());
-        ps.setString(6, paciente.getTelefono());
-        ps.executeUpdate();
+            Method metodo = manager.getMethod("getInstance");
+            print_debug("llamando a: " + metodo);
+
+            // creamos una instancia de la clase recibida
+            this.instance_manager = manager.getDeclaredConstructor().newInstance();
+
+            /**
+             * invocamos el metodo getInstance que tiene la clase instanciada,
+             * en caso de ser ConnectionMongoDBSingleton devuelve una instancia de MongoClient,
+             * si es ConnectionMySQLDBSingleton devuelve una instancia de Connection
+             */
+            conn = metodo.invoke(this.instance_manager);
+        } else {
+            System.out.println("La clase no se reconoce: " + manager);
+        }
     }
 
-    public Paciente select(DNI dni) throws SQLException, SQLDataNotFound, SQLUnknownException {
-        PreparedStatement ps = conn.prepareStatement(
-                "select nombre, email, password, telefono, direccion from Paciente where DNI = ?");
-
-        ps.setString(1, dni.toString());
-        ResultSet rs = ps.executeQuery();
-        rs.next();
 
 
-        try {
-            return new Paciente(
-                    dni,
-                    rs.getString(1),
-                    rs.getString(2),
-                    new SHA256(rs.getString(3), true),
-                    rs.getString(4),
-                    rs.getString(5)
-            );
-        } catch (SQLException e) {
-            String sqlState = e.getSQLState();
-            System.out.println("SQLState: " + sqlState);
-            if (sqlState.equals("S1000")) {
-                System.out.println("No se encontro estos datos, salida: " + e.getMessage());
-                throw new SQLDataNotFound("No se encontro estos datos: " + e.getMessage());
-            } else {
-                System.out.println("Error SQL desconocido/no contemplado: " + e.getMessage());
-                throw new SQLUnknownException(e);
+    public void insert(Paciente paciente) throws SQLException, IllegalAccessException {
+
+        // Preparar datos para insertar
+        HashMap<String, Object> newData = new HashMap<>();
+        newData.put("email", paciente.getEmail());
+        newData.put("password", paciente.getHashClass().getHash());
+        newData.put("dni", paciente.getDni().toString());
+        newData.put("nombre", paciente.getNombre());
+        newData.put("direccion", paciente.getDireccion());
+        newData.put("telefono", paciente.getTelefono());
+
+        if (manager == ConnectionMongoDBSingleton.class) {
+            print_debug("Cambiando a la DB centro_medico");
+            ((ConnectionMongoDBSingleton)instance_manager).setDataBaseName("centro_medico");
+        }
+
+        // buscamos el atributo insert_element en las clases ConnectionMongoDBSingleton o ConnectionMySQLSingleton
+        Field lambda_insert = null;
+        for (Field field: this.manager.getDeclaredFields()) {
+            print_debug(field.getName());
+            if (field.getName().equals("insert_element")) {
+                lambda_insert = field;
+                break;
             }
         }
 
+        assert lambda_insert != null;
+        ((ConnnectionManager)instance_manager).insert(
+                (InsertDB) lambda_insert.get(instance_manager),
+                "Paciente",
+                newData
+        );
     }
 
-    /**
-     * Permite obtener los datos de la DB usando una clausula where,
-     * donde se puede especificar el campo de busqueda via field_by_search,
-     * y el valor a buscar con value_search,
-     * Se debe pasar una funcion lambda "process" donde se procese el Result Set
-     * obtenido, y se cree una instancia de Paciente que se retorne
-     *
-     * @param field_by_search Campo a usar de busqueda, DNI, email, etc
-     * @param value_search Valor a buscar
-     * @param process funcion lambda que usar para procesar los datos
-     * @return Un paciente buscado segun los campos anteriores
-     * @throws SQLException Posiblemente no se encontro al paciente.
-     * @throws TypeDataUnknown No se pudo adivinar el tipo de dato del que se trata
-     */
-    public Paciente select(
-            String field_by_search, Object value_search,
-            ProcessResulSet process
-    ) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement(
-                "select dni, nombre, email, password, telefono, direccion from Paciente where %s = ?".formatted(
-                        field_by_search
-                ));
+    public Paciente select(ConditionsDB condicion) throws SQLException, SQLDataNotFound, SQLUnknownException, IllegalAccessException {
 
+        List<String> campos = new ArrayList<>();
+        campos.add("dni");
+        campos.add("nombre");
+        campos.add("password");
+        campos.add("telefono");
+        campos.add("direccion");
+        campos.add("email");
 
-        if (value_search.getClass().equals(Date.class)) {
-            ps.setDate(1, (Date)value_search);
-        } else if (value_search.getClass().equals(String.class)) {
-            ps.setString(1, (String)value_search);
-        } else if (value_search.getClass().equals(Integer.class)) {
-            ps.setInt(1, (Integer) value_search);
-        } else {
-            throw new TypeDataUnknown("No se pudo obtener el tipo de dato del miembro value_search: " + value_search);
+        ArrayList<ConditionsDB> condiciones = new ArrayList<>();
+        condiciones.add(condicion);
+
+        // buscamos el atributo select_element en las clases ConnectionMongoDBSingleton o ConnectionMySQLSingleton
+        Field lambda_select = null;
+        for (Field field: this.manager.getDeclaredFields()) {
+            print_debug(field.getName());
+            if (field.getName().equals("select_element")) {
+                lambda_select = field;
+                break;
+            }
         }
-        System.out.println(ps);
 
-        ResultSet rs = ps.executeQuery();
-        rs.next();
+        if (manager == ConnectionMongoDBSingleton.class) {
+            print_debug("Cambiando a la DB centro_medico");
+            ((ConnectionMongoDBSingleton)instance_manager).setDataBaseName("centro_medico");
+        }
 
-        return (Paciente) process.invokeProcessResultSet(rs);
+        assert lambda_select != null;
+        Object resultados = ((ConnnectionManager)instance_manager).select(
+
+                (SelectDB)lambda_select.get(instance_manager),
+                campos,
+                "Paciente",
+                condiciones,
+                new ProcessSelectData<>() {
+                    @Override
+                    public Object invokeProcessSelectData(Object data) throws SQLException {
+                        List<Paciente> pacientes = new ArrayList<>();
+                        if (manager == ConnectionMongoDBSingleton.class) {
+                            for (Document doc : (Iterable<Document>)data) {
+                                pacientes.add(new Paciente(
+                                        new DNI(doc.getString("dni")),
+                                        doc.getString("nombre"),
+                                        doc.getString("email"),
+                                        new SHA256(doc.getString("password"), true),
+                                        doc.getString("telefono"),
+                                        doc.getString("direccion")
+                                ));
+                            }
+                        } else {
+                            ResultSet data_ = (ResultSet)data;
+                            while (data_.next()) {
+                                pacientes.add(new Paciente(
+                                        new DNI(data_.getString("dni")),
+                                        data_.getString("nombre"),
+                                        data_.getString("email"),
+                                        new SHA256(data_.getString("password"), true),
+                                        data_.getString("telefono"),
+                                        data_.getString("direccion")
+                                ));
+                            }
+                        }
+                        return pacientes;
+                    }
+                }
+        );
+
+        if (((ArrayList)resultados).size() > 1) {
+            throw new SQLDataNotFound("Hay dos pacientes con el mismo DNI");
+        } else {
+            return (Paciente) ((ArrayList)resultados).getFirst();
+        }
     }
 
 
-    public void delete(DNI dni) throws SQLException {
-        PreparedStatement ps = conn.prepareStatement(
-                "delete from Paciente where DNI = ?");
 
-        ps.setString(1, dni.toString());
-        ps.executeUpdate();
-    }
 
 }
