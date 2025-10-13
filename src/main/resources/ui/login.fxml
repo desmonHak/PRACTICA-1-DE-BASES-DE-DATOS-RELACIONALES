@@ -3,13 +3,15 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="306.0" prefWidth="504.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #d6bfff, #c0e0ff);;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.practica1debasesdedatosrelacionales.Controller.loginController">
    <children>
-      <Button layoutX="151.0" layoutY="200.0" mnemonicParsing="false" onAction="#onActionLogin" prefHeight="25.0" prefWidth="96.0" style="-fx-background-color: #3B6EA5;" text="LOGIN" textFill="WHITE">
+      <Button layoutX="151.0" layoutY="200.0" mnemonicParsing="false" onAction="#onActionLogin" prefHeight="25.0" prefWidth="63.0" style="-fx-background-color: #3B6EA5;" text="LOGIN" textFill="WHITE">
          <font>
             <Font name="Arial" size="12.0" />
          </font></Button>
@@ -20,6 +22,13 @@
             <Font name="Arial Nova" size="23.0" />
          </font>
       </Label>
-      <Button layoutX="260.0" layoutY="200.0" mnemonicParsing="false" onAction="#onActionExit" prefHeight="25.0" prefWidth="96.0" style="-fx-background-color: #3B6EA5;" text="EXIT" textFill="WHITE" />
+      <Button layoutX="292.0" layoutY="200.0" mnemonicParsing="false" onAction="#onActionExit" prefHeight="25.0" prefWidth="63.0" style="-fx-background-color: #3B6EA5;" text="EXIT" textFill="WHITE" />
+      <Button layoutX="221.0" layoutY="200.0" mnemonicParsing="false" onAction="#onActionConfig" prefHeight="25.0" prefWidth="63.0" style="-fx-background-color: #3B6EA5;" text="CONF" textFill="WHITE" />
+      <RadioButton layoutX="151.0" layoutY="251.0" mnemonicParsing="false" onAction="#onActionSetSGDBToMySQL" text="MySQL">
+         <toggleGroup>
+            <ToggleGroup fx:id="GrupoSGDB" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton layoutX="280.0" layoutY="251.0" mnemonicParsing="false" onAction="#onActionSetSGDBToMongoDB" selected="true" text="MongoDB" toggleGroup="$GrupoSGDB" />
    </children>
 </AnchorPane>

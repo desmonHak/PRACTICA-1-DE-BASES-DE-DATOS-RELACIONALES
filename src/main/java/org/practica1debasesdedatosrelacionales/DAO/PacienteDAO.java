@@ -1,5 +1,6 @@
 package org.practica1debasesdedatosrelacionales.DAO;
 
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import org.bson.Document;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.*;
 import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.InsertDB;
@@ -7,6 +8,7 @@ import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessS
 import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.SelectDB;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLUnknownException;
+import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.TypeDataUnknown;
 import org.practica1debasesdedatosrelacionales.domain.*;
 import org.practica1debasesdedatosrelacionales.util.R;
@@ -37,7 +39,7 @@ public class PacienteDAO {
         }
     }
 
-    public PacienteDAO(Class<?> manager) throws SQLException, IOException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public PacienteDAO(Class<?> manager) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         if (
                 manager == ConnectionMongoDBSingleton.class ||
                         manager == ConnectionMySQLDBSingleton.class) {
@@ -55,7 +57,21 @@ public class PacienteDAO {
              * en caso de ser ConnectionMongoDBSingleton devuelve una instancia de MongoClient,
              * si es ConnectionMySQLDBSingleton devuelve una instancia de Connection
              */
-            conn = metodo.invoke(this.instance_manager);
+            try {
+                conn = metodo.invoke(this.instance_manager);
+            } catch (InvocationTargetException e) {
+                Throwable causaReal = e.getTargetException(); // o e.getCause(), puedo obtener el error que se causo en la invocacion real
+
+                if (causaReal instanceof SingletonException) { /**
+                    * si este error ocurrio, la base de datos no esta ejecutandose lo mas seguro, quiero
+                    * caputar el error en el controller de login, asi al presionar el boton de logeo si ocurre este error
+                    * poder lanzar una ventana de error
+                    */
+                    throw (SingletonException)causaReal;
+                }
+            } catch (Exception e) { // por defecto imprimire la informacion de error
+                e.printStackTrace();
+            }
         } else {
             System.out.println("La clase no se reconoce: " + manager);
         }
@@ -63,7 +79,7 @@ public class PacienteDAO {
 
 
 
-    public void insert(Paciente paciente) throws SQLException, IllegalAccessException {
+    public void insert(Paciente paciente) throws SQLException, IllegalAccessException, IOException {
 
         // Preparar datos para insertar
         HashMap<String, Object> newData = new HashMap<>();
@@ -97,7 +113,7 @@ public class PacienteDAO {
         );
     }
 
-    public Paciente select(ConditionsDB condicion) throws SQLException, SQLDataNotFound, SQLUnknownException, IllegalAccessException {
+    public Paciente select(ConditionsDB condicion) throws SQLException, SQLDataNotFound, SQLUnknownException, IllegalAccessException, CommunicationsException, IOException {
 
         List<String> campos = new ArrayList<>();
         campos.add("dni");

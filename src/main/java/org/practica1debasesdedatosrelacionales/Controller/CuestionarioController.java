@@ -1,5 +1,6 @@
 package org.practica1debasesdedatosrelacionales.Controller;
 
+import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -33,6 +34,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.SQLNonTransientConnectionException;
 import java.time.LocalDate;
 import java.util.Random;
 import java.util.ResourceBundle;
@@ -198,8 +200,7 @@ public class CuestionarioController implements Initializable {
             int n_cita = citasDB.getMaxNumeroCita(); // primero hay que conectarse;
             // cambiar el campo del numero de cita, con el valor obtenido de la DB
             textFieldNumeroCita.setText(String.valueOf(n_cita));
-        } catch (SQLException |
-                 IllegalAccessException e) {
+        } catch (SQLException | IllegalAccessException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -267,8 +268,7 @@ public class CuestionarioController implements Initializable {
                         PacienteDAO pacienteDB = null;
                         try {
                             pacienteDB = new PacienteDAO(InitWindows.managerDBClass);
-                        } catch (SQLException | IOException | NoSuchMethodException | InvocationTargetException |
-                                 IllegalAccessException | InstantiationException e) {
+                        } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
                         Paciente paciente = null;
@@ -279,6 +279,13 @@ public class CuestionarioController implements Initializable {
                                 // obtenemos el paciente a traves del DNI si todo fue bieb
                                 paciente = pacienteDB.select(new ConditionsDB("dni", ConditionsDBOperators.EQUALS, dni.toString()));
                             } catch (SQLException | IllegalAccessException e) {
+                                if (e instanceof CommunicationsException || e instanceof SQLNonTransientConnectionException) {
+                                    AlertsGlobal.invokeAlert("Error", "La conexion con el SGDB se cerro sin aviso.");
+                                    return;
+                                } else {
+                                    throw new RuntimeException(e);
+                                }
+                            } catch (IOException e) {
                                 throw new RuntimeException(e);
                             }
                             if (paciente != null) {
@@ -357,6 +364,8 @@ public class CuestionarioController implements Initializable {
             citasDB.insert(cita);
         } catch (DniException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
             AlertsGlobal.invokeAlert("Error", e.getMessage());
+        } catch (SQLNonTransientConnectionException e) {
+            AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
         }
 
         // actualizar la tabla de la DB para mostrar el nuevo campo ingresada
@@ -367,7 +376,11 @@ public class CuestionarioController implements Initializable {
         // si no escogio una cita, mostrar error
         if (cita_now != null) {
             // eliminar la cita seleccionado
-            citasDB.delete(cita_now);
+            try {
+                citasDB.delete(cita_now);
+            } catch (SQLNonTransientConnectionException e) {
+                AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
+            }
 
             updateTable();
         }  else {
@@ -384,7 +397,11 @@ public class CuestionarioController implements Initializable {
             cita_now.setFecha_cita(Date.valueOf(fieldDateCita.getValue()));
 
             // actualizar la cita
-            citasDB.update(cita_now);
+            try {
+                citasDB.update(cita_now);
+            } catch (SQLNonTransientConnectionException e) {
+                AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
+            }
 
             // actualizar tabla
             updateTable();

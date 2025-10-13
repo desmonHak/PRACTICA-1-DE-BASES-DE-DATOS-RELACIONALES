@@ -23,7 +23,7 @@ public class InitWindows extends Application {
     public static Scene loginScene;
 
     // por defecto se usara mongo DB
-    public static Class<?> managerDBClass = ConnectionMySQLDBSingleton.class;
+    public static Class<?> managerDBClass = ConnectionMongoDBSingleton.class;
 
     private double xOffset = 0;
     private double yOffset = 0;
@@ -37,6 +37,7 @@ public class InitWindows extends Application {
         EspecialidadDAO.modo_debug = true;
         CitaDAO.modo_debug = true;
         PacienteDAO.modo_debug = true;
+
 
         p_stage = stage;
         FXMLLoader fxmlLoader = new FXMLLoader();

@@ -12,7 +12,14 @@ import static org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.Con
 
 public class ConnectionMySQLDBSingleton extends ConnnectionManager<Connection, ResultSet> {
     private static Connection instance = null;
+
+    final public static String name_manager = "MySQL";
+
     public static boolean modo_debug = false;
+    /**
+     * cantidad maxima de reintentos para hacer una conexion si una base de datos esta cerrada:
+     */
+    public static int maxConnectionRetries = 6;
 
     private static void print_debug(Object data) {
         if (modo_debug) {
@@ -43,96 +50,133 @@ public class ConnectionMySQLDBSingleton extends ConnnectionManager<Connection, R
 
     public UpdateDB<Connection> update_element = (connection, table,
                                                   data, conditions) ->{
-        // construir la parte de la sentencia con los datos a modificar:
-        StringBuilder fields = new StringBuilder();
-        // almacena los campos a modificar:
-        Set<String> fields_key = data.keySet();
-        int index_field = 0; // counter de campo
-        for (String field : fields_key) {
-            // campo = valor
-            fields.append(field);
-            fields.append(" = ");
+        for (int i = 0; i < maxConnectionRetries; i++) {
+            try {
+                // construir la parte de la sentencia con los datos a modificar:
+                StringBuilder fields = new StringBuilder();
+                // almacena los campos a modificar:
+                Set<String> fields_key = data.keySet();
+                int index_field = 0; // counter de campo
+                for (String field : fields_key) {
+                    // campo = valor
+                    fields.append(field);
+                    fields.append(" = ");
 
 
-            fields.append(
-                    check_type_data( // comrpobar si es valido para SQL
-                            data.get(field))); // obtener el dato con el que actualizar
+                    fields.append(
+                            check_type_data( // comrpobar si es valido para SQL
+                                    data.get(field))); // obtener el dato con el que actualizar
 
-            if (index_field < fields_key.size() - 1) {
-                fields.append(", ");
+                    if (index_field < fields_key.size() - 1) {
+                        fields.append(", ");
+                    }
+                    index_field++;
+                }
+
+                String sql = String.format("UPDATE %s SET %s WHERE %s", table, fields.toString(),
+                        build_data_conditions(conditions));
+                print_debug(sql);
+                PreparedStatement ps = connection.prepareStatement(sql);
+                ps.executeUpdate();
+            } catch (SQLNonTransientConnectionException e) {
+                System.out.println("Reintentando una nueva conexion: " + e.getMessage());
+                instance = null; // primero debo ponerlo a null para que getInstance actue bien
+                instance = getInstance();
+                Thread.sleep(100);
             }
-            index_field++;
         }
-
-        String sql = String.format("UPDATE %s SET %s WHERE %s", table, fields.toString(),
-                build_data_conditions(conditions));
-        print_debug(sql);
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.executeUpdate();
     };
 
     public InsertDB<Connection> insert_element = (connection, table, objects_insert) -> {
-        // Convierte objects_insert (HashMap<String, Object>) en campos y valores
-        HashMap<String, Object> data = (HashMap<String, Object>) objects_insert;
-        StringBuilder campos = new StringBuilder();
-        StringBuilder valores = new StringBuilder();
-        Set<String> claves = data.keySet();
-        int index = 0;
+        for (int i = 0; i < maxConnectionRetries; i++) {
+            try {
+                // Convierte objects_insert (HashMap<String, Object>) en campos y valores
+                HashMap<String, Object> data = (HashMap<String, Object>) objects_insert;
+                StringBuilder campos = new StringBuilder();
+                StringBuilder valores = new StringBuilder();
+                Set<String> claves = data.keySet();
+                int index = 0;
 
-        for (String key : claves) {
-            campos.append(key);
-            // agregamos el valor comprobando antes si es valido
-            valores.append(check_type_data(data.get(key)));
-            if (index < claves.size() - 1) {
-                campos.append(", ");
-                valores.append(", ");
+                for (String key : claves) {
+                    campos.append(key);
+                    // agregamos el valor comprobando antes si es valido
+                    valores.append(check_type_data(data.get(key)));
+                    if (index < claves.size() - 1) {
+                        campos.append(", ");
+                        valores.append(", ");
+                    }
+                    index++;
+                }
+
+                String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
+                        table, campos.toString(), valores.toString()
+                );
+                print_debug(sql);
+                PreparedStatement ps = connection.prepareStatement(sql);
+                ps.executeUpdate();
+            } catch (SQLNonTransientConnectionException e) {
+                System.out.println("Reintentando una nueva conexion: " + e.getMessage());
+                instance = null; // primero debo ponerlo a null para que getInstance actue bien
+                instance = getInstance();
+                Thread.sleep(100);
             }
-            index++;
         }
-
-        String sql = String.format("INSERT INTO %s (%s) VALUES (%s);",
-                table, campos.toString(), valores.toString()
-        );
-        print_debug(sql);
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.executeUpdate();
     };
 
     public SelectDB<Connection, ResultSet> select_element = (
             connection, select_fields,
             table, condiciones, process_select_data) -> {
-        // Construir la cadena de campos a seleccionar
-        String campos = String.join(", ", (List<String>) select_fields);
+        for (int i = 0; i < maxConnectionRetries; i++) {
+            try {
+                // Construir la cadena de campos a seleccionar
+                String campos = String.join(", ", (List<String>) select_fields);
 
-        // si no hay condiciones se indicara where True, que siempre sera verdadero y no aplicara filtro
-        String whereClause = "True";
-        // si no hay condiciones
-        if (condiciones != null) {
-            // Construir la parte WHERE basada en las condiciones
-            whereClause = build_data_conditions(condiciones);
+                // si no hay condiciones se indicara where True, que siempre sera verdadero y no aplicara filtro
+                String whereClause = "True";
+                // si no hay condiciones
+                if (condiciones != null) {
+                    // Construir la parte WHERE basada en las condiciones
+                    whereClause = build_data_conditions(condiciones);
+                }
+
+                String sql = String.format("SELECT %s FROM %s WHERE %s;", campos, table, whereClause);
+                print_debug(sql);
+                PreparedStatement ps = connection.prepareStatement(sql);
+
+                // Ejecutar la consulta
+                ResultSet rs = ps.executeQuery();
+
+                // Retornar los datos como especifico el usuario
+                return process_select_data.invokeProcessSelectData(rs);
+            } catch (SQLNonTransientConnectionException e) {
+                System.out.println("Reintentando una nueva conexion: " + e.getMessage());
+                instance = null; // primero debo ponerlo a null para que getInstance actue bien
+                instance = getInstance();
+                Thread.sleep(100);
+            }
         }
-
-        String sql = String.format("SELECT %s FROM %s WHERE %s;", campos, table, whereClause);
-        print_debug(sql);
-        PreparedStatement ps = connection.prepareStatement(sql);
-
-        // Ejecutar la consulta
-        ResultSet rs = ps.executeQuery();
-
-        // Retornar los datos como especifico el usuario
-        return process_select_data.invokeProcessSelectData(rs);
+        return null;
     };
 
     public DeleteDB<Connection> delete_element = (connection, table, condiciones) -> {
-        // Construir la cláusula WHERE con las condiciones
-        String whereClause = build_data_conditions(condiciones);
+        for (int i = 0; i < maxConnectionRetries; i++) {
+            try {
+                // Construir la cláusula WHERE con las condiciones
+                String whereClause = build_data_conditions(condiciones);
 
-        // Generar la sentencia SQL DELETE
-        String sql = String.format("DELETE FROM %s WHERE %s", table, whereClause);
-        print_debug(sql);
+                // Generar la sentencia SQL DELETE
+                String sql = String.format("DELETE FROM %s WHERE %s", table, whereClause);
+                print_debug(sql);
 
-        PreparedStatement ps = connection.prepareStatement(sql);
-        ps.executeUpdate();
+                PreparedStatement ps = connection.prepareStatement(sql);
+                ps.executeUpdate();
+            } catch (SQLNonTransientConnectionException e) {
+                System.out.println("Reintentando una nueva conexion: " + e.getMessage());
+                instance = null; // primero debo ponerlo a null para que getInstance actue bien
+                instance = getInstance();
+                Thread.sleep(100);
+            }
+        }
     };
 
 
@@ -176,21 +220,29 @@ public class ConnectionMySQLDBSingleton extends ConnnectionManager<Connection, R
             String table,
             HashMap<String, Object> data,
             List<ConditionsDB> condiciones
-    ) throws SQLException {
+    ) throws SQLException, IOException {
         if (instance == null) {
             throw new SingletonException(this.getClass(),
                     "No se inicializo la clase o se cerro la conexion, debe obtener una instancia con getInstance()");
         }
-        update_process.invokeUpdate(instance, table, data, condiciones);
+        try {
+            update_process.invokeUpdate(instance, table, data, condiciones);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void insert(InsertDB<Connection> insert_process, String table, HashMap<String, Object> data) throws SQLException {
+    public void insert(InsertDB<Connection> insert_process, String table, HashMap<String, Object> data) throws SQLException, IOException {
         if (instance == null) {
             throw new SingletonException(this.getClass(),
                     "No se inicializo la clase o se cerro la conexion, debe obtener una instancia con getInstance()");
         }
-        insert_process.invokeInsert(instance, table, data);
+        try {
+            insert_process.invokeInsert(instance, table, data);
+        }catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -200,21 +252,29 @@ public class ConnectionMySQLDBSingleton extends ConnnectionManager<Connection, R
             String table,
             List<ConditionsDB> condiciones,
             ProcessSelectData<ResultSet> process
-    ) throws SQLException {
+    ) throws SQLException, IOException {
         if (instance == null) {
             throw new SingletonException(this.getClass(),
                     "No se inicializo la clase o se cerro la conexion, debe obtener una instancia con getInstance()");
         }
-        return select_process.invokeSelect(instance, select_fields, table, condiciones, process);
+        try {
+            return select_process.invokeSelect(instance, select_fields, table, condiciones, process);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void delete(DeleteDB<Connection> delete_process, String table, List<ConditionsDB> condiciones ) throws SQLException {
+    public void delete(DeleteDB<Connection> delete_process, String table, List<ConditionsDB> condiciones ) throws SQLException, IOException {
         if (instance == null) {
             throw new SingletonException(this.getClass(),
                     "No se inicializo la clase o se cerro la conexion, debe obtener una instancia con getInstance()");
         }
-        delete_process.invokeRemove(instance, table, condiciones);
+        try {
+            delete_process.invokeRemove(instance, table, condiciones);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 
