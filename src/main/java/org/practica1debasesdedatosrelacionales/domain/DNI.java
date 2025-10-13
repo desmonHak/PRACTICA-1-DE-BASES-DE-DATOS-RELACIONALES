@@ -49,8 +49,8 @@ public class DNI {
     }
 
     /**
-     * Genera un DNI aleatorio válido (8 dígitos + letra)
-     * @return un objeto DNI válido generado aleatoriamente
+     * Genera un DNI aleatorio valido (8 digitos + letra)
+     * @return un objeto DNI valido generado aleatoriamente
      */
     public static DNI generarDniAleatorio () {
         StringBuilder numero_str = new StringBuilder();

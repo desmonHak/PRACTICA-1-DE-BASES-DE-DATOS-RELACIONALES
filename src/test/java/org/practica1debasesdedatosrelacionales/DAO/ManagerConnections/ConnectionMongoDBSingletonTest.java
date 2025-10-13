@@ -8,6 +8,7 @@ import org.practica1debasesdedatosrelacionales.domain.Cita;
 import org.practica1debasesdedatosrelacionales.domain.DNI;
 import org.practica1debasesdedatosrelacionales.domain.Especialidad;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,14 +28,14 @@ class ConnectionMongoDBSingletonTest {
     }
 
     @Test
-    void getNewConection() {
+    void getNewConection() throws IOException {
         // una primera vez deberemos obtener la nueva coneccion
         System.out.println(ConnectionMongoDBSingleton.getInstance());
         System.out.println(mongoDBManager.connect());
     }
 
     @Test
-    void closeConection() {
+    void closeConection() throws IOException {
         System.out.println("Antigua referencia: ");
         System.out.println(ConnectionMongoDBSingleton.getInstance());
         mongoDBManager.closeConection();
@@ -43,7 +44,7 @@ class ConnectionMongoDBSingletonTest {
     }
 
     @Test
-    void connect() {
+    void connect() throws IOException {
         // al usar connect, deberemos inicializar una instancia antes o este error aparecera
         try {
             System.out.println(mongoDBManager.connect());
@@ -57,7 +58,7 @@ class ConnectionMongoDBSingletonTest {
     }
 
     @Test
-    void update() throws SQLException {
+    void update() throws SQLException, IOException {
         // activar el modo de depuracion:
         ConnectionMongoDBSingleton.modo_debug =  true;
 
@@ -82,7 +83,7 @@ class ConnectionMongoDBSingletonTest {
     }
 
     @Test
-    void insert() throws SQLException {
+    void insert() throws SQLException, IOException {
         System.out.println(ConnectionMongoDBSingleton.getInstance());
 
         // Activar modo debug
@@ -98,7 +99,7 @@ class ConnectionMongoDBSingletonTest {
         mongoDBManager.insert(mongoDBManager.insert_element, "Citas", newData);
     }
     @Test
-    void select() throws SQLException {
+    void select() throws SQLException, IOException {
         System.out.println(ConnectionMongoDBSingleton.getInstance());
 
         ConnectionMongoDBSingleton.modo_debug = true;
@@ -145,7 +146,7 @@ class ConnectionMongoDBSingletonTest {
 
 
     @Test
-    void delete() throws SQLException {
+    void delete() throws SQLException, IOException {
         System.out.println(ConnectionMongoDBSingleton.getInstance());
 
         ConnectionMongoDBSingleton.modo_debug = true;

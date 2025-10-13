@@ -15,6 +15,7 @@ import com.mongodb.MongoClient;
 import org.bson.Document;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.*;
 import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.*;
+import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
 import org.practica1debasesdedatosrelacionales.domain.Cita;
 import org.practica1debasesdedatosrelacionales.domain.DNI;
 import org.practica1debasesdedatosrelacionales.domain.Especialidad;
@@ -44,7 +45,20 @@ public class CitaDAO {
          * en caso de ser ConnectionMongoDBSingleton devuelve una instancia de MongoClient,
          * si es ConnectionMySQLDBSingleton devuelve una instancia de Connection
          */
-        conn = metodo.invoke(this.instance_manager);
+        try {
+            conn = metodo.invoke(this.instance_manager);
+        } catch (InvocationTargetException e) {
+            Throwable causaReal = e.getTargetException(); // o e.getCause(), puedo obtener el error que se causo en la invocacion real
+            if (causaReal instanceof SingletonException) { /**
+             * si este error ocurrio, la base de datos no esta ejecutandose lo mas seguro, quiero
+             * caputar el error en el controller de login, asi al presionar el boton de logeo si ocurre este error
+             * poder lanzar una ventana de error
+             */
+                throw (SingletonException)causaReal;
+            }
+        } catch (Exception e) { // por defecto imprimire la informacion de error
+            e.printStackTrace();
+        }
     }
 
 
@@ -55,7 +69,7 @@ public class CitaDAO {
     }
 
 
-    public void insert(Cita cita) throws SQLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public void insert(Cita cita) throws SQLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException {
         // Preparar datos para insertar
         HashMap<String, Object> newData = new HashMap<>();
         newData.put("dni", cita.getDni().toString());
@@ -66,7 +80,7 @@ public class CitaDAO {
         //Method metodoInsert = this.manager.getMethod("insert");
         //print_debug("llamando a: " + metodoInsert);
 
-        // Ejecutar inserción en la tabla "Citas"
+        // Ejecutar insercion en la tabla "Citas"
         //mySQLManager.insert_element
 
         //metodoInsert.invoke(this.instance_manager,null , "Citas", newData);
@@ -167,7 +181,7 @@ public class CitaDAO {
     }
 
 
-    public void delete(Cita cita) throws SQLException, IllegalAccessException {
+    public void delete(Cita cita) throws SQLException, IllegalAccessException, IOException {
         ArrayList<ConditionsDB> condiciones = new ArrayList<>();
 
         // where DNI = ?, numero_cita = ?
@@ -199,7 +213,7 @@ public class CitaDAO {
 
     }
 
-    public void update(Cita cita) throws IllegalAccessException, SQLException {
+    public void update(Cita cita) throws IllegalAccessException, SQLException, IOException {
         HashMap<String, Object> values_update = new HashMap<>();
         values_update.put("fecha_cita", cita.getFecha_cita());
         values_update.put("especialidad", cita.getEspecialidad().toString());
@@ -235,7 +249,7 @@ public class CitaDAO {
 
     }
 
-    public int getMaxNumeroCita() throws SQLException, IllegalAccessException {
+    public int getMaxNumeroCita() throws SQLException, IllegalAccessException, IOException {
 
         List<String> campos = new ArrayList<>();
         campos.add("numero_cita");

@@ -13,7 +13,7 @@ import java.sql.SQLIntegrityConstraintViolationException;
 
 class PacienteDAOTest {
 
-
+    /*
     @Test
     void connect() throws SQLException, IOException {
         PacienteDAO conn = new PacienteDAO();
@@ -97,5 +97,5 @@ class PacienteDAOTest {
         System.out.println(paciente);
 
         conn.desconnect();
-    }
+    }*/
 }

@@ -3,6 +3,7 @@ package org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnnectionManager;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,5 +14,5 @@ public interface UpdateDB<ClassConnection> {
     void invokeUpdate(
             ClassConnection connection,
             String table, HashMap<String, Object> data,
-            List<ConditionsDB> condiciones) throws SQLException;
+            List<ConditionsDB> condiciones) throws SQLException, IOException, InterruptedException;
 }

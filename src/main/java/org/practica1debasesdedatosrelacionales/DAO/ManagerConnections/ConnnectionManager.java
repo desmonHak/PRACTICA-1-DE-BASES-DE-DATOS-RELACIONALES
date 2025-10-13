@@ -17,13 +17,13 @@ public abstract class ConnnectionManager<T, TypeDataSelect> {
             String table,
             HashMap<String, Object> data,
             List<ConditionsDB> condiciones
-    ) throws SQLException;
+    ) throws SQLException, IOException;
 
     public abstract void insert(
             InsertDB<T> update_process,
             String Table,
             HashMap<String, Object> data
-    ) throws SQLException;
+    ) throws SQLException, IOException;
 
     public abstract Object select(
             SelectDB<T, TypeDataSelect> update_process,
@@ -31,12 +31,12 @@ public abstract class ConnnectionManager<T, TypeDataSelect> {
             String table,
             List<ConditionsDB> condiciones,
             ProcessSelectData<TypeDataSelect> process
-    ) throws SQLException;
+    ) throws SQLException, IOException;
 
     public abstract void delete(
             DeleteDB<T> update_process,
             String table,
             List<ConditionsDB> condiciones
-    ) throws SQLException;
+    ) throws SQLException, IOException;
 
 }

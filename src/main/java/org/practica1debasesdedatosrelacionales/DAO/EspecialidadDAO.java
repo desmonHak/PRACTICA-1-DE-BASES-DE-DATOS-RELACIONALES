@@ -7,6 +7,7 @@ import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.Connection
 import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLUnknownException;
+import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.TypeDataUnknown;
 import org.practica1debasesdedatosrelacionales.domain.*;
 import org.practica1debasesdedatosrelacionales.util.R;
@@ -52,7 +53,21 @@ public class EspecialidadDAO {
              * en caso de ser ConnectionMongoDBSingleton devuelve una instancia de MongoClient,
              * si es ConnectionMySQLDBSingleton devuelve una instancia de Connection
              */
-            conn = metodo.invoke(this.instance_manager);
+            try {
+                conn = metodo.invoke(this.instance_manager);
+            } catch (InvocationTargetException e) {
+                Throwable causaReal = e.getTargetException(); // o e.getCause(), puedo obtener el error que se causo en la invocacion real
+
+                if (causaReal instanceof SingletonException) { /**
+                 * si este error ocurrio, la base de datos no esta ejecutandose lo mas seguro, quiero
+                 * caputar el error en el controller de login, asi al presionar el boton de logeo si ocurre este error
+                 * poder lanzar una ventana de error
+                 */
+                    throw (SingletonException)causaReal;
+                }
+            } catch (Exception e) { // por defecto imprimire la informacion de error
+                e.printStackTrace();
+            }
         } else {
             throw new TypeDataUnknown("La clase SGDB: " + manager + " no se reconoce");
         }

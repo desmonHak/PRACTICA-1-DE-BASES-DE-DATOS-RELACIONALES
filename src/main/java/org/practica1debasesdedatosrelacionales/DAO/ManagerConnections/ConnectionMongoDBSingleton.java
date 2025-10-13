@@ -1,9 +1,7 @@
 package org.practica1debasesdedatosrelacionales.DAO.ManagerConnections;
 
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.MongoException;
+import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.UpdateResult;
@@ -12,6 +10,8 @@ import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.*;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
 import org.practica1debasesdedatosrelacionales.util.R;
 
+import java.io.IOException;
+import java.net.ConnectException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,12 +19,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Usaremos el patron Singleton para tener una unica instancia de
  * conexion
  */
 public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, Iterable<Document>> {
+
+    final public static String name_manager = "MongoDB";
 
     /**
      * variable estatica que almacenara la unica existencia que habra
@@ -57,7 +61,7 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
         this.dataBaseName = dataBaseName;
     }
 
-    public static MongoClient getInstance() {
+    public static MongoClient getInstance() throws IOException {
         if (instance == null) {
             instance = new ConnectionMongoDBSingleton().getNewConection();
         }
@@ -115,7 +119,7 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
             Document data_in_document = convertToDocument(data);
             Document filtro = buildFilterFromConditions(conditions);
 
-            // Crear el documento de actualización
+            // Crear el documento de actualizacion
             Document updateOperation = new Document("$set", data_in_document);
 
             print_debug(filtro);
@@ -126,12 +130,12 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
                 }
             }
 
-            // Ejecutar la actualización
+            // Ejecutar la actualizacion
             UpdateResult result = collection.updateMany(filtro, updateOperation);
             print_debug("Documentos actualizados: " + result.getModifiedCount());
 
 
-            print_debug("Actualización completada en colección " + table);
+            print_debug("Actualizacion completada en coleccion " + table);
             if (modo_debug) {
                 for (Document doc : collection.find(filtro)) {
                     print_debug(doc.toJson());
@@ -170,11 +174,11 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
 
             Document document = new Document(convertedData);
 
-            // Insertar el documento en la colección
+            // Insertar el documento en la coleccion
             collection.insertOne(document);
 
             if (modo_debug) {
-                System.out.println("Documento insertado en colección " + table + ": " + document.toJson());
+                System.out.println("Documento insertado en coleccion " + table + ": " + document.toJson());
             }
         } catch (MongoException e) {
             System.err.println("Error al insertar datos en MongoDB: " + e.getMessage());
@@ -200,7 +204,7 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
         // Obtener cursor con documentos que cumplen el filtro
         Iterable<Document> documentos = collection.find(filtro);
 
-        // Usar la función de procesamiento definida por el usuario sobre los documentos
+        // Usar la funcion de procesamiento definida por el usuario sobre los documentos
         // La interfaz ProcessSelectData debe poder trabajar con Iterable<Document>
         return process_select_data.invokeProcessSelectData(documentos);
     };
@@ -223,9 +227,17 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
         }
     };
 
-
     @Override
-    public MongoClient getNewConection() {
+    public MongoClient getNewConection() throws IOException {
+        final int MAX_CONNECTION_RETRIES = 3;
+        final int RETRY_DELAY_MS = 2000;
+        MongoClient client = null;
+        int attempts = 0;
+
+        Logger mongoLogger = Logger.getLogger("org.mongodb.driver");
+        mongoLogger.setLevel(Level.SEVERE); // indicar que solo quiero ver errores graves de MongoDB
+
+
         try {
             Properties properties = new Properties();
             properties.load(R.getProperties("databaseMongoDB.properties"));
@@ -234,16 +246,48 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
             String host = properties.getProperty("host");
             int port = Integer.parseInt(properties.getProperty("port"));
 
-            return new MongoClient(
-                    new MongoClientURI(String.format("mongodb://%s:%s@%s:%d/?authSource=admin",
-                            username, password, host, port)
-                    )
-            );
+
+            while (attempts < MAX_CONNECTION_RETRIES) {
+                try {
+                    client = new MongoClient(
+                            new MongoClientURI(String.format(
+                                    // con serverSelectionTimeoutMS=50, indico un timeout de 50ms, en lugar de los 30s por
+                                    // defecto, de esta manera la GUI apenas se queda bloqueada
+                                    "mongodb://%s:%s@%s:%d/?authSource=admin&serverSelectionTimeoutMS=50",
+                                    username, password, host, port
+                            ))
+                    );
+
+                    // la conexion se pudo realizar, necesito hacer este ping por que al crear la conexion, si no se puede
+                    // establecer, no se generara un error en mi hilo, sino en el hilo del gestor de la libreria, por lo
+                    // que no puedo capturarlo directamente, mi estrategia sera entonces intentar hacer la conexion y forzar
+                    // un ping para averiguar si la conexion se realizo o no, en caso de error, es que no se pudo hacer lo
+                    // mas posible
+
+                    MongoDatabase db = client.getDatabase("admin");
+                    db.runCommand(new org.bson.Document("ping", 1));
+                    System.out.println("Conexion exitosa a MongoDB");
+                    return client;
+
+                } catch (MongoSocketOpenException | MongoTimeoutException e) {
+                    attempts++;
+                    System.err.println("Intento " + attempts + " fallido: " + e.getMessage());
+                    if (attempts < MAX_CONNECTION_RETRIES) {
+                        try {
+                            Thread.sleep(RETRY_DELAY_MS);
+                        } catch (InterruptedException ie) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                    }
+                }
+            }
         } catch (Exception e) {
-            System.out.println("Conexion Fallida");
+            System.err.println("Error inesperado al conectar a MongoDB: " + e.getMessage());
             e.printStackTrace();
             return null;
         }
+        throw new MongoTimeoutException ("No se pudo conectar a MongoDB despues de " + MAX_CONNECTION_RETRIES + " intentos.");
     }
 
     /**
@@ -272,21 +316,29 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
     }
 
     @Override
-    public void update(UpdateDB<MongoClient> update_process, String collection, HashMap<String, Object> data, List<ConditionsDB> condiciones) throws SQLException {
+    public void update(UpdateDB<MongoClient> update_process, String collection, HashMap<String, Object> data, List<ConditionsDB> condiciones) throws SQLException, IOException {
         if (instance == null) {
             throw new SingletonException(this.getClass(),
                     "No se inicializo la clase o se cerro la conexion, debe obtener una instancia con getInstance()");
         }
-        update_process.invokeUpdate(instance, collection, data, condiciones);
+        try {
+            update_process.invokeUpdate(instance, collection, data, condiciones);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void insert(InsertDB<MongoClient> insert_process, String collection, HashMap<String, Object> data) throws SQLException {
+    public void insert(InsertDB<MongoClient> insert_process, String collection, HashMap<String, Object> data) throws SQLException, IOException {
         if (instance == null) {
             throw new SingletonException(this.getClass(),
                     "No se inicializo la clase o se cerro la conexion, debe obtener una instancia con getInstance()");
         }
-        insert_process.invokeInsert(instance, collection, data);
+        try {
+            insert_process.invokeInsert(instance, collection, data);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -296,20 +348,28 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
             String collection,
             List<ConditionsDB> condiciones,
             ProcessSelectData<Iterable<Document>> process
-    ) throws SQLException {
+    ) throws SQLException, IOException {
         if (instance == null) {
             throw new SingletonException(this.getClass(),
                     "No se inicializo la clase o se cerro la conexion, debe obtener una instancia con getInstance()");
         }
-        return select_process.invokeSelect(instance, select_fields, collection, condiciones, process);
+        try {
+            return select_process.invokeSelect(instance, select_fields, collection, condiciones, process);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
-    public void delete(DeleteDB<MongoClient> delete_process, String collection, List<ConditionsDB> condiciones) throws SQLException {
+    public void delete(DeleteDB<MongoClient> delete_process, String collection, List<ConditionsDB> condiciones) throws SQLException, IOException {
         if (instance == null) {
             throw new SingletonException(this.getClass(),
                     "No se inicializo la clase o se cerro la conexion, debe obtener una instancia con getInstance()");
         }
-        delete_process.invokeRemove(instance, collection, condiciones);
+        try {
+            delete_process.invokeRemove(instance, collection, condiciones);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

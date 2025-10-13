@@ -116,7 +116,7 @@ public class SHA256 {
         UInt32_t value1;
         UInt32_t value2;
         UInt32_t value3;
-        /* Aplicar la función de dispersión a los valores iniciales */
+        /* Aplicar la funcion de dispersion a los valores iniciales */
         value1 = jenkins_hash(   seed, n1, n2, n3, n4, n5, n6 );
         value2 = jenkins_hash( value1, n1, n2, n3, n4, n5, n6 );
         value3 = jenkins_hash( value2, n1, n2, n3, n4, n5, n6 );
