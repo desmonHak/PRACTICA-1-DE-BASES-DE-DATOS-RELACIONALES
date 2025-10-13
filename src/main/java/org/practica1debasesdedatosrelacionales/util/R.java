@@ -17,7 +17,14 @@ public class R {
     public static URL getUI(String name) {
         Thread t = Thread.currentThread();
         ClassLoader c = t.getContextClassLoader();
-        URL url = c.getResource("ui" + File.separator + name);
+        /** no usar File.separator, en Windows es \ y en Linux/Mac es /.
+         * ClassLoader.getResource() siempre espera / como separador, independientemente del sistema operativo
+         * Esto funciona siempre que no quiera hacer un Jar, pero
+         * en el .jar, los recursos usan / como separador, no \. Esto devuelve null -> la url es null al mezclar
+         * separadores
+         * */
+
+        URL url = c.getResource("ui/" + name);
         if (url != null) {
             return url;
         } else {
