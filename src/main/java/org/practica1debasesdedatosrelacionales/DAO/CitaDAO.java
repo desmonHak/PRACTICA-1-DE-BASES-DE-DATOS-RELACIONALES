@@ -80,7 +80,7 @@ public class CitaDAO {
         //Method metodoInsert = this.manager.getMethod("insert");
         //print_debug("llamando a: " + metodoInsert);
 
-        // Ejecutar inserción en la tabla "Citas"
+        // Ejecutar insercion en la tabla "Citas"
         //mySQLManager.insert_element
 
         //metodoInsert.invoke(this.instance_manager,null , "Citas", newData);

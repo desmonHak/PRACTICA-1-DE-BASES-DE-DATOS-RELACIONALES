@@ -41,7 +41,7 @@ public class UInt32_t extends Number implements Comparable<UInt32_t>{
     }
 
     public UInt32_t shiftRight(int bits) {
-        // Desplazamiento lógico
+        // Desplazamiento logico
         return new UInt32_t(Integer.toUnsignedLong(this.value >>> bits));
     }
 

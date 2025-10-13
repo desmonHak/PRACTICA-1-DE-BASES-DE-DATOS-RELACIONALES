@@ -28,14 +28,14 @@ class ConnectionMongoDBSingletonTest {
     }
 
     @Test
-    void getNewConection() {
+    void getNewConection() throws IOException {
         // una primera vez deberemos obtener la nueva coneccion
         System.out.println(ConnectionMongoDBSingleton.getInstance());
         System.out.println(mongoDBManager.connect());
     }
 
     @Test
-    void closeConection() {
+    void closeConection() throws IOException {
         System.out.println("Antigua referencia: ");
         System.out.println(ConnectionMongoDBSingleton.getInstance());
         mongoDBManager.closeConection();
@@ -44,7 +44,7 @@ class ConnectionMongoDBSingletonTest {
     }
 
     @Test
-    void connect() {
+    void connect() throws IOException {
         // al usar connect, deberemos inicializar una instancia antes o este error aparecera
         try {
             System.out.println(mongoDBManager.connect());

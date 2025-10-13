@@ -119,7 +119,7 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
             Document data_in_document = convertToDocument(data);
             Document filtro = buildFilterFromConditions(conditions);
 
-            // Crear el documento de actualización
+            // Crear el documento de actualizacion
             Document updateOperation = new Document("$set", data_in_document);
 
             print_debug(filtro);
@@ -130,12 +130,12 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
                 }
             }
 
-            // Ejecutar la actualización
+            // Ejecutar la actualizacion
             UpdateResult result = collection.updateMany(filtro, updateOperation);
             print_debug("Documentos actualizados: " + result.getModifiedCount());
 
 
-            print_debug("Actualización completada en colección " + table);
+            print_debug("Actualizacion completada en coleccion " + table);
             if (modo_debug) {
                 for (Document doc : collection.find(filtro)) {
                     print_debug(doc.toJson());
@@ -174,11 +174,11 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
 
             Document document = new Document(convertedData);
 
-            // Insertar el documento en la colección
+            // Insertar el documento en la coleccion
             collection.insertOne(document);
 
             if (modo_debug) {
-                System.out.println("Documento insertado en colección " + table + ": " + document.toJson());
+                System.out.println("Documento insertado en coleccion " + table + ": " + document.toJson());
             }
         } catch (MongoException e) {
             System.err.println("Error al insertar datos en MongoDB: " + e.getMessage());
@@ -204,7 +204,7 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
         // Obtener cursor con documentos que cumplen el filtro
         Iterable<Document> documentos = collection.find(filtro);
 
-        // Usar la función de procesamiento definida por el usuario sobre los documentos
+        // Usar la funcion de procesamiento definida por el usuario sobre los documentos
         // La interfaz ProcessSelectData debe poder trabajar con Iterable<Document>
         return process_select_data.invokeProcessSelectData(documentos);
     };
@@ -266,7 +266,7 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
 
                     MongoDatabase db = client.getDatabase("admin");
                     db.runCommand(new org.bson.Document("ping", 1));
-                    System.out.println("✅ Conexión exitosa a MongoDB");
+                    System.out.println("Conexion exitosa a MongoDB");
                     return client;
 
                 } catch (MongoSocketOpenException | MongoTimeoutException e) {
@@ -287,7 +287,7 @@ public class ConnectionMongoDBSingleton extends ConnnectionManager<MongoClient, 
             e.printStackTrace();
             return null;
         }
-        throw new MongoTimeoutException ("No se pudo conectar a MongoDB después de " + MAX_CONNECTION_RETRIES + " intentos.");
+        throw new MongoTimeoutException ("No se pudo conectar a MongoDB despues de " + MAX_CONNECTION_RETRIES + " intentos.");
     }
 
     /**

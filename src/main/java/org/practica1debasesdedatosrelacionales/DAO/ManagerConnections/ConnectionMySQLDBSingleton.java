@@ -161,7 +161,7 @@ public class ConnectionMySQLDBSingleton extends ConnnectionManager<Connection, R
     public DeleteDB<Connection> delete_element = (connection, table, condiciones) -> {
         for (int i = 0; i < maxConnectionRetries; i++) {
             try {
-                // Construir la cláusula WHERE con las condiciones
+                // Construir la clausula WHERE con las condiciones
                 String whereClause = build_data_conditions(condiciones);
 
                 // Generar la sentencia SQL DELETE

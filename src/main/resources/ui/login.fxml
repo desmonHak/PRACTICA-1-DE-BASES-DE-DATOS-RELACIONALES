@@ -23,11 +23,11 @@
          </font>
       </Label>
       <Button layoutX="254.0" layoutY="200.0" mnemonicParsing="false" onAction="#onActionExit" prefHeight="25.0" prefWidth="101.0" style="-fx-background-color: #3B6EA5;" text="EXIT" textFill="WHITE" />
-      <RadioButton layoutX="151.0" layoutY="251.0" mnemonicParsing="false" onAction="#onActionSetSGDBToMySQL" text="MySQL">
+      <RadioButton fx:id="mysqlButton" layoutX="151.0" layoutY="251.0" mnemonicParsing="false" onAction="#onActionSetSGDBToMySQL" text="MySQL">
          <toggleGroup>
             <ToggleGroup fx:id="GrupoSGDB" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton layoutX="280.0" layoutY="251.0" mnemonicParsing="false" onAction="#onActionSetSGDBToMongoDB" selected="true" text="MongoDB" toggleGroup="$GrupoSGDB" />
+      <RadioButton fx:id="mongoButton" layoutX="280.0" layoutY="251.0" mnemonicParsing="false" onAction="#onActionSetSGDBToMongoDB" selected="true" text="MongoDB" toggleGroup="$GrupoSGDB" />
    </children>
 </AnchorPane>

@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -35,6 +36,8 @@ public class loginController {
     public PasswordField fieldPassword;
 
     public static Paciente paciente_login;
+    public RadioButton mysqlButton;
+    public RadioButton mongoButton;
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -51,6 +54,12 @@ public class loginController {
                     paciente = conn.select(new ConditionsDB("email", ConditionsDBOperators.EQUALS, fieldEmail.getText()));
                 } catch (NullPointerException e) {
                     throw new SingletonException(this.getClass(), "La base de datos no esta abierta");
+                } catch (Exception e) {
+                    if (e instanceof IllegalAccessException) {
+                        throw (IllegalAccessException)e;
+                    } else {
+                        e.printStackTrace();
+                    }
                 }
 
 
@@ -99,7 +108,7 @@ public class loginController {
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
-        } catch (SingletonException e) {
+        } catch (SingletonException | NullPointerException e) {
             AlertsGlobal.invokeAlert("Error", "La base de datos no esta abierta o se cerro sin previo aviso, abrala o vuelva a intentarlo");
         }
 
@@ -139,6 +148,9 @@ public class loginController {
             // cambiar el gestor de SGDB a MySQL
             ConnectionMySQLDBSingleton.getInstance();
             InitWindows.managerDBClass = ConnectionMySQLDBSingleton.class;
+            // si se pudo hacer todo correctamente, forzamos la seleccion:
+            mysqlButton.setSelected(true);
+            mongoButton.setSelected(false);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             if (e instanceof CommunicationsException) {
@@ -146,6 +158,11 @@ public class loginController {
                         String.format("La base de datos %s no esta abierta o se cerro sin previo aviso, abrala o vuelva a intentarlo, se mantendra el SGDB anterior si se selecciono anteriormente",
                                 ConnectionMySQLDBSingleton.name_manager)
                 );
+                // Deshacer cambio de seleccion en caso de error
+                if (InitWindows.managerDBClass == ConnectionMongoDBSingleton.class) {
+                    mongoButton.setSelected(true);
+                    mysqlButton.setSelected(false);
+                }
             } else {
                 e.printStackTrace();
             }
@@ -159,6 +176,10 @@ public class loginController {
             // cambiar el gestor de SGDB a MongoDB
             ConnectionMongoDBSingleton.getInstance();
             InitWindows.managerDBClass = ConnectionMongoDBSingleton.class;
+
+            // si todo fue correcto, cambiar la seleccion:
+            mongoButton.setSelected(true);
+            mysqlButton.setSelected(false);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
             if (e instanceof MongoSocketOpenException || e instanceof ConnectException || e instanceof MongoTimeoutException) {
@@ -166,6 +187,11 @@ public class loginController {
                         String.format("La base de datos %s no esta abierta o se cerro sin previo aviso, abrala o vuelva a intentarlo, se mantendra el SGDB anterior si se selecciono anteriormente",
                                 ConnectionMongoDBSingleton.name_manager)
                 );
+                // Deshacer cambio visual en caso de error
+                if (InitWindows.managerDBClass == ConnectionMySQLDBSingleton.class) {
+                    mysqlButton.setSelected(true);
+                    mongoButton.setSelected(false);
+                }
             } else {
                 e.printStackTrace();
             }

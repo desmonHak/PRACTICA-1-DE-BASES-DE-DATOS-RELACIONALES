@@ -86,7 +86,7 @@ class ConnectionMySQLDBSingletonTest {
         newData.put("fecha_cita", Date.valueOf(LocalDate.of(2025, 10, 20)));
         newData.put("especialidad", "Cirugia");
 
-        // Ejecutar inserción en la tabla "Citas"
+        // Ejecutar insercion en la tabla "Citas"
         mySQLManager.insert(mySQLManager.insert_element, "Citas", newData);
     }
 

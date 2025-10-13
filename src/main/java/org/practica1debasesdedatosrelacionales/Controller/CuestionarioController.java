@@ -20,6 +20,7 @@ import org.practica1debasesdedatosrelacionales.DAO.CitaDAO;
 import org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
 import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDBOperators;
+import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
 import org.practica1debasesdedatosrelacionales.DAO.PacienteDAO;
 import org.practica1debasesdedatosrelacionales.Exceptions.DniException;
 import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
@@ -323,6 +324,18 @@ public class CuestionarioController implements Initializable {
     public void onActionVolver(ActionEvent actionEvent) throws IOException {
         FXMLLoader loader = new FXMLLoader(R.getUI("login.fxml"));
         Parent panel = loader.load();
+
+        // obtengo los botones para cambiar el estado dependiendo de la seleccion
+        RadioButton mongoButton = (RadioButton) panel.lookup("#mongoButton");
+        RadioButton mysqlButton = (RadioButton) panel.lookup("#mysqlButton");
+
+        if (InitWindows.managerDBClass == ConnectionMongoDBSingleton.class) {
+            mongoButton.setSelected(true);
+            mysqlButton.setSelected(false);
+        } else {
+            mysqlButton.setSelected(true);
+            mongoButton.setSelected(false);
+        }
 
         Scene loginScene = new Scene(panel);
 
