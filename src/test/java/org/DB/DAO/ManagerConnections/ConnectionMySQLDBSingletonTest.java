@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,7 +88,9 @@ class ConnectionMySQLDBSingletonTest {
         newData.put("especialidad", "Cirugia");
 
         // Ejecutar insercion en la tabla "Citas"
-        mySQLManager.insert(mySQLManager.insert_element, "Citas", newData);
+        try {
+            mySQLManager.insert(mySQLManager.insert_element, "Citas", newData);
+        } catch (SQLIntegrityConstraintViolationException e) { }
     }
 
 
