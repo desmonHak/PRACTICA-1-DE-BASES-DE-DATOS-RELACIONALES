@@ -1,6 +1,6 @@
-package org.practica1debasesdedatosrelacionales.DAO.ManagerConnections;
+package org.DB.DAO.ManagerConnections;
 
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.*;
+import org.DB.DAO.PackageInterfaceCRUD.*;
 
 import java.io.IOException;
 import java.sql.SQLException;

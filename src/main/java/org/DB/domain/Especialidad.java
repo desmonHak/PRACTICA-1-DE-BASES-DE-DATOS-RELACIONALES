@@ -1,6 +1,4 @@
-package org.practica1debasesdedatosrelacionales.domain;
-
-import java.util.ArrayList;
+package org.DB.domain;
 
 /**
  * Clase para almacenar todas las especialidades de la base de datos

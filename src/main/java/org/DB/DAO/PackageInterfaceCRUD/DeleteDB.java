@@ -1,6 +1,6 @@
-package org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD;
+package org.DB.DAO.PackageInterfaceCRUD;
 
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
+import org.DB.DAO.ManagerConnections.ConditionsDB;
 
 import java.io.IOException;
 import java.sql.SQLException;

@@ -1,17 +1,14 @@
-package org.practica1debasesdedatosrelacionales.DAO;
+package org.DB.DAO;
 
 import org.junit.jupiter.api.Test;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMySQLDBSingleton;
-import org.practica1debasesdedatosrelacionales.InitWindows;
-import org.practica1debasesdedatosrelacionales.domain.Cita;
+import org.DB.DAO.ManagerConnections.ConnectionMongoDBSingleton;
+import org.DB.DAO.ManagerConnections.ConnectionMySQLDBSingleton;
+import org.DB.InitWindows;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class EspecialidadDAOTest {
 

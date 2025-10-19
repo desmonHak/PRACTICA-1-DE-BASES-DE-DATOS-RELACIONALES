@@ -1,9 +1,9 @@
-package org.practica1debasesdedatosrelacionales.domain;
+package org.DB.domain;
 
 import javafx.scene.paint.Color;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.practica1debasesdedatosrelacionales.Exceptions.SeedErrorRange;
-import org.practica1debasesdedatosrelacionales.util.UInt32_t;
+import org.DB.Exceptions.SeedErrorRange;
+import org.DB.util.UInt32_t;
 
 public class SHA256 {
 

@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="306.0" prefWidth="504.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #d6bfff, #c0e0ff);;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.practica1debasesdedatosrelacionales.Controller.loginController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="306.0" prefWidth="504.0" style="-fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #d6bfff, #c0e0ff);;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.DB.Controller.loginController">
    <children>
       <Button layoutX="151.0" layoutY="200.0" mnemonicParsing="false" onAction="#onActionLogin" prefHeight="25.0" prefWidth="101.0" style="-fx-background-color: #3B6EA5;" text="LOGIN" textFill="WHITE">
          <font>

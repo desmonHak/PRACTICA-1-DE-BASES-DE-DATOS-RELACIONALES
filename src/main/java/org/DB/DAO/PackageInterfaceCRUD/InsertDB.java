@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD;
+package org.DB.DAO.PackageInterfaceCRUD;
 
 import java.io.IOException;
 import java.sql.SQLException;

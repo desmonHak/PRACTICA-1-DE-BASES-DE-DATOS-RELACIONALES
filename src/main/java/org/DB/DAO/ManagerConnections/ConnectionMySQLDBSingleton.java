@@ -1,14 +1,14 @@
-package org.practica1debasesdedatosrelacionales.DAO.ManagerConnections;
+package org.DB.DAO.ManagerConnections;
 
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.*;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
-import org.practica1debasesdedatosrelacionales.util.R;
+import org.DB.DAO.PackageInterfaceCRUD.*;
+import org.DB.Exceptions.ExceptionsDB.SingletonException;
+import org.DB.util.R;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
 
-import static org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB.check_type_data;
+import static org.DB.DAO.ManagerConnections.ConditionsDB.check_type_data;
 
 public class ConnectionMySQLDBSingleton extends ConnnectionManager<Connection, ResultSet> {
     private static Connection instance = null;

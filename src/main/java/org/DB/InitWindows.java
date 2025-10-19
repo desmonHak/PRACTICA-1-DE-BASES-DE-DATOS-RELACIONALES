@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales;
+package org.DB;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -6,13 +6,12 @@ import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import org.practica1debasesdedatosrelacionales.Controller.loginController;
-import org.practica1debasesdedatosrelacionales.DAO.CitaDAO;
-import org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMySQLDBSingleton;
-import org.practica1debasesdedatosrelacionales.DAO.PacienteDAO;
-import org.practica1debasesdedatosrelacionales.util.R;
+import org.DB.DAO.CitaDAO;
+import org.DB.DAO.EspecialidadDAO;
+import org.DB.DAO.ManagerConnections.ConnectionMongoDBSingleton;
+import org.DB.DAO.ManagerConnections.ConnectionMySQLDBSingleton;
+import org.DB.DAO.PacienteDAO;
+import org.DB.util.R;
 
 import java.io.IOException;
 import java.net.URL;

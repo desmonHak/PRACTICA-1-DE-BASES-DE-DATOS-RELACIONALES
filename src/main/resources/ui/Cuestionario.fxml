@@ -15,7 +15,7 @@
 <?import javafx.scene.paint.Stop?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="634.0" prefWidth="688.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.practica1debasesdedatosrelacionales.Controller.CuestionarioController">
+<AnchorPane prefHeight="634.0" prefWidth="688.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.DB.Controller.CuestionarioController">
    <children>
       <AnchorPane layoutX="137.0" layoutY="23.0" prefHeight="49.0" prefWidth="498.0" style="-fx-background-color: gray; -fx-background-radius: 10px;">
          <children>

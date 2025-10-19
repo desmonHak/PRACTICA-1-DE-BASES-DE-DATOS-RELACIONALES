@@ -1,2 +1,2 @@
 Manifest-Version: 1.0
-Main-Class: org.practica1debasesdedatosrelacionales.Main
+Main-Class: org.DB.Main

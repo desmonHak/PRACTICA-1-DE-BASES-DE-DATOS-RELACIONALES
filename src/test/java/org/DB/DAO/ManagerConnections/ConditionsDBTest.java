@@ -1,8 +1,6 @@
-package org.practica1debasesdedatosrelacionales.DAO.ManagerConnections;
+package org.DB.DAO.ManagerConnections;
 
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ConditionsDBTest {
 

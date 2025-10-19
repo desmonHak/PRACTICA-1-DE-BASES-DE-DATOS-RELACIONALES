@@ -1,25 +1,20 @@
-package org.practica1debasesdedatosrelacionales.DAO;
+package org.DB.DAO;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
 
-import com.mongodb.MongoClient;
 import org.bson.Document;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.*;
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.*;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
-import org.practica1debasesdedatosrelacionales.domain.Cita;
-import org.practica1debasesdedatosrelacionales.domain.DNI;
-import org.practica1debasesdedatosrelacionales.domain.Especialidad;
-import org.practica1debasesdedatosrelacionales.domain.Paciente;
+import org.DB.DAO.ManagerConnections.*;
+import org.DB.DAO.PackageInterfaceCRUD.*;
+import org.DB.Exceptions.ExceptionsDB.SingletonException;
+import org.DB.domain.Cita;
+import org.DB.domain.DNI;
+import org.DB.domain.Especialidad;
 
 public class CitaDAO {
     private Object conn;

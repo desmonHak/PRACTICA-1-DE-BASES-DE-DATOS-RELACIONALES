@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB;
+package org.DB.Exceptions.ExceptionsDB;
 
 import java.sql.SQLException;
 

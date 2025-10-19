@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB;
+package org.DB.Exceptions.ExceptionsDB;
 
 public class SQLDataNotFound extends RuntimeException {
   public SQLDataNotFound(String message) {

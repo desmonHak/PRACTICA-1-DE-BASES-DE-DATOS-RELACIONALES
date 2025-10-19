@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB;
+package org.DB.Exceptions.ExceptionsDB;
 
 public class SingletonException extends RuntimeException {
     public SingletonException(Class<?> class_exception, String message) {

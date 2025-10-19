@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.domain;
+package org.DB.domain;
 
 import java.sql.Date;
 

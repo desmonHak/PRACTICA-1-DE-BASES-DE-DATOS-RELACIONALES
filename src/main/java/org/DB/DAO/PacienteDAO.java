@@ -1,17 +1,15 @@
-package org.practica1debasesdedatosrelacionales.DAO;
+package org.DB.DAO;
 
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
 import org.bson.Document;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.*;
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.InsertDB;
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.SelectDB;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLUnknownException;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.TypeDataUnknown;
-import org.practica1debasesdedatosrelacionales.domain.*;
-import org.practica1debasesdedatosrelacionales.util.R;
+import org.DB.DAO.ManagerConnections.*;
+import org.DB.DAO.PackageInterfaceCRUD.InsertDB;
+import org.DB.DAO.PackageInterfaceCRUD.ProcessSelectData;
+import org.DB.DAO.PackageInterfaceCRUD.SelectDB;
+import org.DB.Exceptions.ExceptionsDB.SQLDataNotFound;
+import org.DB.Exceptions.ExceptionsDB.SQLUnknownException;
+import org.DB.Exceptions.ExceptionsDB.SingletonException;
+import org.DB.domain.*;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -21,7 +19,6 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
 
 public class PacienteDAO {
 

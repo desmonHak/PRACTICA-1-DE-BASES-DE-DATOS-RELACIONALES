@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.DAO.ManagerConnections;
+package org.DB.DAO.ManagerConnections;
 
 public enum ConditionsDBOperators {
     EQUALS("="),

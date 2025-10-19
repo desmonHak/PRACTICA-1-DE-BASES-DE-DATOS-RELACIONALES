@@ -1,11 +1,9 @@
-package org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD;
+package org.DB.DAO.PackageInterfaceCRUD;
 
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnnectionManager;
+import org.DB.DAO.ManagerConnections.ConditionsDB;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 

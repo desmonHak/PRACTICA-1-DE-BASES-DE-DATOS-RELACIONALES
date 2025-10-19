@@ -1,8 +1,6 @@
-package org.practica1debasesdedatosrelacionales.DAO.ManagerConnections;
+package org.DB.DAO.ManagerConnections;
 
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.TypeDataUnknown;
-
-import java.sql.Date;
+import org.DB.Exceptions.ExceptionsDB.TypeDataUnknown;
 
 public class ConditionsDB {
 

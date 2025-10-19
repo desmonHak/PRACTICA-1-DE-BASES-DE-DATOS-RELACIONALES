@@ -1,12 +1,12 @@
-package org.practica1debasesdedatosrelacionales.DAO.ManagerConnections;
+package org.DB.DAO.ManagerConnections;
 
 import org.bson.Document;
 import org.junit.jupiter.api.Test;
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
-import org.practica1debasesdedatosrelacionales.domain.Cita;
-import org.practica1debasesdedatosrelacionales.domain.DNI;
-import org.practica1debasesdedatosrelacionales.domain.Especialidad;
+import org.DB.DAO.PackageInterfaceCRUD.ProcessSelectData;
+import org.DB.Exceptions.ExceptionsDB.SingletonException;
+import org.DB.domain.Cita;
+import org.DB.domain.DNI;
+import org.DB.domain.Especialidad;
 
 import java.io.IOException;
 import java.time.Instant;

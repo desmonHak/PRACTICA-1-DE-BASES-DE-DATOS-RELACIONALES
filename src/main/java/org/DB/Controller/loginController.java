@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.Controller;
+package org.DB.Controller;
 
 import com.mongodb.MongoSocketOpenException;
 import com.mongodb.MongoTimeoutException;
@@ -11,23 +11,18 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.*;
-import org.practica1debasesdedatosrelacionales.DAO.PacienteDAO;
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLUnknownException;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
-import org.practica1debasesdedatosrelacionales.InitWindows;
-import org.practica1debasesdedatosrelacionales.domain.DNI;
-import org.practica1debasesdedatosrelacionales.domain.Paciente;
-import org.practica1debasesdedatosrelacionales.domain.SHA256;
-import org.practica1debasesdedatosrelacionales.util.AlertsGlobal;
-import org.practica1debasesdedatosrelacionales.util.R;
+import org.DB.DAO.ManagerConnections.*;
+import org.DB.DAO.PacienteDAO;
+import org.DB.Exceptions.ExceptionsDB.SQLDataNotFound;
+import org.DB.Exceptions.ExceptionsDB.SingletonException;
+import org.DB.InitWindows;
+import org.DB.domain.Paciente;
+import org.DB.util.AlertsGlobal;
+import org.DB.util.R;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.ConnectException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.NoSuchElementException;
 

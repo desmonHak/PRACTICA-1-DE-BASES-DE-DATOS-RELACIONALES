@@ -1,6 +1,9 @@
-package org.practica1debasesdedatosrelacionales.Controller;
+package org.DB.Controller;
 
 import com.mysql.cj.jdbc.exceptions.CommunicationsException;
+import io.github.desmonhak.JColorsTerm;
+import io.github.desmonhak.Log.Log;
+import io.github.desmonhak.Log.TypeLog;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -16,19 +19,19 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 
-import org.practica1debasesdedatosrelacionales.DAO.CitaDAO;
-import org.practica1debasesdedatosrelacionales.DAO.EspecialidadDAO;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDBOperators;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
-import org.practica1debasesdedatosrelacionales.DAO.PacienteDAO;
-import org.practica1debasesdedatosrelacionales.Exceptions.DniException;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SQLDataNotFound;
-import org.practica1debasesdedatosrelacionales.InitWindows;
-import org.practica1debasesdedatosrelacionales.domain.*;
-import org.practica1debasesdedatosrelacionales.util.AlertsGlobal;
-import org.practica1debasesdedatosrelacionales.util.R;
-import org.practica1debasesdedatosrelacionales.util.UInt32_t;
+import org.DB.DAO.CitaDAO;
+import org.DB.DAO.EspecialidadDAO;
+import org.DB.DAO.ManagerConnections.ConditionsDB;
+import org.DB.DAO.ManagerConnections.ConditionsDBOperators;
+import org.DB.DAO.ManagerConnections.ConnectionMongoDBSingleton;
+import org.DB.DAO.PacienteDAO;
+import org.DB.Exceptions.DniException;
+import org.DB.Exceptions.ExceptionsDB.SQLDataNotFound;
+import org.DB.InitWindows;
+import org.DB.domain.*;
+import org.DB.util.AlertsGlobal;
+import org.DB.util.R;
+import org.DB.util.UInt32_t;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -37,10 +40,11 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.SQLNonTransientConnectionException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-import static org.practica1debasesdedatosrelacionales.InitWindows.loginScene;
+import static io.github.desmonhak.JColorsTerm.dump_buffer_cli;
 
 public class CuestionarioController implements Initializable {
 
@@ -58,6 +62,8 @@ public class CuestionarioController implements Initializable {
     public TextField textFieldNumeroCita;
     public DatePicker fieldDateCita;
 
+    Log log = new Log("log.txt", TypeLog.INFO);
+
     // zoom actual, solo actualizamos si el zoom cambio
     private int actual_zoom = 0;
 
@@ -72,7 +78,7 @@ public class CuestionarioController implements Initializable {
     }
 
     // solo repintar si el zoom fue cambiado
-    void paint_id_draw(int blockSize) {
+    void paint_id_draw(int blockSize) throws IOException {
         if (actual_zoom == blockSize) {
             return;
         } else {
@@ -85,15 +91,22 @@ public class CuestionarioController implements Initializable {
      * Solo se llamara para forzar el pintado, el resto de casos se llama a paint_id_draw
      * @param blockSize tamaño de los pixeles al hacer zoom
      */
-    void force_paint_id_draw(int blockSize) {
+    void force_paint_id_draw(int blockSize) throws IOException {
         String hash_user_data = loginController.paciente_login.get_hash_user_data().getHash();
-        System.out.println("Hash data user: " + hash_user_data);
+        log.print_log("Hash data user: " + hash_user_data + "\n");
+
         GraphicsContext gc = IDdrawCanvas.getGraphicsContext2D();
 
         int len_hash = hash_user_data.length();
         int index_hash = 0;
         int width = (int) IDdrawCanvas.getWidth();
         int height = (int) IDdrawCanvas.getHeight();
+
+        int width_reduced = width / blockSize;
+        int height_reduced = height / blockSize;
+        java.awt.Color[] paintedColors = new java.awt.Color[(int) (width_reduced * height_reduced)]; // array para almacenar colores
+        java.awt.Color defaultColor = new java.awt.Color(0, 0, 0); // negro opaco
+        Arrays.fill(paintedColors, defaultColor);
 
         for (int x = 0; x < width; x += blockSize) {
             for (int y = 0; y < height; y += blockSize) {
@@ -128,11 +141,24 @@ public class CuestionarioController implements Initializable {
                 // pintar los bloques de pixeles segun el color obtenido
                 for (int dx = 0; dx < blockSize; dx++) {
                     for (int dy = 0; dy < blockSize; dy++) {
+
                         if (x + dx < width && y + dy < height) {
+
                             gc.getPixelWriter().setColor(x + dx, y + dy, my_pixel);
+
                         }
                     }
                 }
+
+
+                javafx.scene.paint.Color fx = my_pixel;
+                int idx_x = Math.min(x / blockSize, width_reduced - 1);
+                int idx_y = Math.min(y / blockSize, height_reduced - 1);
+                paintedColors[idx_y * width_reduced + idx_x] = new java.awt.Color(
+                        (float) fx.getRed(),
+                        (float) fx.getGreen(),
+                        (float) fx.getBlue(),
+                        (float) fx.getOpacity()); // alpha);  // guardar color
 
                 //if ((x + y) % 2 == 0) {
                 //    gc.getPixelWriter().setColor(x, y, Color.RED);
@@ -145,6 +171,7 @@ public class CuestionarioController implements Initializable {
             }
 
         }
+        JColorsTerm.dump_buffer_cli(paintedColors, width_reduced, height_reduced, false, "   ");
     }
 
     /**
@@ -174,7 +201,12 @@ public class CuestionarioController implements Initializable {
                 // al hacer click sobre una fila de la tabla
                 if (event.getClickCount() == 1 && (! row.isEmpty()) ) {
                     cita_now = row.getItem(); // obtener la cita si la fila no esta vacia
-                    System.out.println(cita_now);
+                    try {
+                        log.print_log(cita_now.toString() + "\n");
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
 
                     // y cambiar los campos de texto con los datos de la cita seleccionada
                     textFieldNumeroCita.setText(cita_now.getNumero_cita().toString());
@@ -211,16 +243,32 @@ public class CuestionarioController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
+        try {
+            log.clear_file();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         /**
          * Pintar por primera vez el ID unico usando bloques de 8 pixeles
          */
-        paint_id_draw(8);
+        try {
+            paint_id_draw(8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         // obtener el valor del elemento Slider, convertirlo a un valor int para el calculo y forzar el repintado del ID
         sliderZoom.valueProperty().addListener((obs, oldVal, newVal) -> {
-            System.out.println((int)newVal.doubleValue());
-            paint_id_draw((int)newVal.doubleValue());
+            try {
+                log.print_log(String.valueOf((int)newVal.doubleValue()) + "\n");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            try {
+                paint_id_draw((int)newVal.doubleValue());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         });
 
         // indicar como obtener los dato de la columna
@@ -240,10 +288,16 @@ public class CuestionarioController implements Initializable {
          */
         EspecialidadDAO espe = null;
         try {
-            System.out.println(InitWindows.managerDBClass);
+            log.print_log(String.valueOf(InitWindows.managerDBClass) + "\n");
             espe = new EspecialidadDAO(InitWindows.managerDBClass);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
-            System.out.println("No se pudo instanciar la clase EspecialidadDAO con " + InitWindows.managerDBClass);
+            try {
+                log.print_log("No se pudo instanciar la clase EspecialidadDAO con " + InitWindows.managerDBClass + "\n");
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            throw new RuntimeException(e);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         try {
@@ -265,7 +319,7 @@ public class CuestionarioController implements Initializable {
                 newScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                     if (event.getCode() == KeyCode.ENTER) {
                         // si se presiona enter, buscamos al paciente a traves del DNI
-                        System.out.println("Enter presionado (sceneProperty listener)");
+
                         PacienteDAO pacienteDB = null;
                         try {
                             pacienteDB = new PacienteDAO(InitWindows.managerDBClass);
@@ -304,6 +358,8 @@ public class CuestionarioController implements Initializable {
                         } catch (SQLDataNotFound e) {
                             AlertsGlobal.invokeAlert("Error",
                                     "El paciente con DNI %s no existe".formatted(textFieldDNI.getText()));
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
 
                         // consumimos el evento

@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.util;
+package org.DB.util;
 
 /**
  * Clase que representa un valor de 32bits sin signo, al estilo C

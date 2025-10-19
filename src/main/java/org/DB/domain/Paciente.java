@@ -1,6 +1,4 @@
-package org.practica1debasesdedatosrelacionales.domain;
-
-import org.apache.commons.codec.digest.DigestUtils;
+package org.DB.domain;
 
 public class Paciente {
 

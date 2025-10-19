@@ -1,13 +1,11 @@
-package org.practica1debasesdedatosrelacionales.DAO;
+package org.DB.DAO;
 
 import org.junit.jupiter.api.Test;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDB;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConditionsDBOperators;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMySQLDBSingleton;
-import org.practica1debasesdedatosrelacionales.domain.Cita;
-import org.practica1debasesdedatosrelacionales.domain.DNI;
-import org.practica1debasesdedatosrelacionales.domain.Especialidad;
+import org.DB.DAO.ManagerConnections.ConnectionMongoDBSingleton;
+import org.DB.DAO.ManagerConnections.ConnectionMySQLDBSingleton;
+import org.DB.domain.Cita;
+import org.DB.domain.DNI;
+import org.DB.domain.Especialidad;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -15,10 +13,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CitaDAOTest {
 

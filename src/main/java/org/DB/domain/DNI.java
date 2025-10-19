@@ -1,9 +1,8 @@
-package org.practica1debasesdedatosrelacionales.domain;
+package org.DB.domain;
 
-import org.practica1debasesdedatosrelacionales.Exceptions.DniException;
+import org.DB.Exceptions.DniException;
 
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 
 public class DNI {

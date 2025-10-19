@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales;
+package org.DB;
 
 import javafx.application.Application;
 

@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.Exceptions;
+package org.DB.Exceptions;
 
 public class SeedErrorRange extends RuntimeException {
     public SeedErrorRange(String message) {

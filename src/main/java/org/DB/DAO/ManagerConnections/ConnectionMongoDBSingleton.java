@@ -1,4 +1,4 @@
-package org.practica1debasesdedatosrelacionales.DAO.ManagerConnections;
+package org.DB.DAO.ManagerConnections;
 
 
 import com.mongodb.*;
@@ -6,14 +6,11 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.*;
-import org.practica1debasesdedatosrelacionales.Exceptions.ExceptionsDB.SingletonException;
-import org.practica1debasesdedatosrelacionales.util.R;
+import org.DB.DAO.PackageInterfaceCRUD.*;
+import org.DB.Exceptions.ExceptionsDB.SingletonException;
+import org.DB.util.R;
 
 import java.io.IOException;
-import java.net.ConnectException;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;

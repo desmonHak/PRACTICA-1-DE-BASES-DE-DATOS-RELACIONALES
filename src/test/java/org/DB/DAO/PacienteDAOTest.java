@@ -1,15 +1,4 @@
-package org.practica1debasesdedatosrelacionales.DAO;
-
-import org.junit.jupiter.api.Test;
-import org.practica1debasesdedatosrelacionales.DAO.ManagerConnections.ConnectionMongoDBSingleton;
-import org.practica1debasesdedatosrelacionales.DAO.PackageInterfaceCRUD.ProcessSelectData;
-import org.practica1debasesdedatosrelacionales.domain.DNI;
-import org.practica1debasesdedatosrelacionales.domain.Paciente;
-
-import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLIntegrityConstraintViolationException;
+package org.DB.DAO;
 
 class PacienteDAOTest {
 
