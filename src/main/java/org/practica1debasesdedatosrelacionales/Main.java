@@ -1,9 +1,0 @@
-package org.practica1debasesdedatosrelacionales;
-
-import javafx.application.Application;
-
-public class Main {
-    public static void main(String[] args) {
-        Application.launch(InitWindows.class, args);
-    }
-}
