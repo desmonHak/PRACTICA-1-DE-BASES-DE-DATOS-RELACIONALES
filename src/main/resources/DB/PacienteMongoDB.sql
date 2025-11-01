@@ -28,7 +28,7 @@ db.Paciente.insertMany([
     {
         email: "maria.gomez@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "50123456A",
+        dni: "50123456Q",
         nombre: "María Gómez",
         direccion: "Av. de la Constitución 23, Madrid",
         telefono: "612345678"
@@ -36,7 +36,7 @@ db.Paciente.insertMany([
     {
         email: "juan.lopez@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "49234567B",
+        dni: "49234567P",
         nombre: "Juan López",
         direccion: "C/ Mayor 45, Valencia",
         telefono: "698765432"
@@ -44,7 +44,7 @@ db.Paciente.insertMany([
     {
         email: "laura.martin@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "48345678C",
+        dni: "48345678T",
         nombre: "Laura Martín",
         direccion: "C/ Prado 7, Sevilla",
         telefono: "677889900"
@@ -52,7 +52,7 @@ db.Paciente.insertMany([
     {
         email: "carlos.perez@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "47456789D",
+        dni: "47456789S",
         nombre: "Carlos Pérez",
         direccion: "C/ Real 19, Bilbao",
         telefono: "655443322"
@@ -60,7 +60,7 @@ db.Paciente.insertMany([
     {
         email: "ana.ruiz@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "46567890E",
+        dni: "46567890C",
         nombre: "Ana Ruiz",
         direccion: "Plaza del Sol 8, Zaragoza",
         telefono: "699112233"
@@ -68,7 +68,7 @@ db.Paciente.insertMany([
     {
         email: "lucia.sanchez@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "44789012G",
+        dni: "44789012P",
         nombre: "Lucía Sánchez",
         direccion: "C/ Luna 30, Murcia",
         telefono: "634556677"
@@ -76,7 +76,7 @@ db.Paciente.insertMany([
     {
         email: "david.torres@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "43890123H",
+        dni: "44789012P",
         nombre: "David Torres",
         direccion: "C/ Jardines 2, Valladolid",
         telefono: "622334455"
@@ -84,7 +84,7 @@ db.Paciente.insertMany([
     {
         email: "marta.fernandez@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "42901234J",
+        dni: "42901234R",
         nombre: "Marta Fernández",
         direccion: "C/ Colón 15, Alicante",
         telefono: "688990011"
@@ -92,7 +92,7 @@ db.Paciente.insertMany([
     {
         email: "santiago.romero@example.com",
         password: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-        dni: "41912345K",
+        dni: "41912345C",
         nombre: "Santiago Romero",
         direccion: "Paseo del Río 9, Córdoba",
         telefono: "611223344"
