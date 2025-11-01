@@ -1,5 +1,9 @@
 package org.DB.domain;
 
+import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.DB.util.PasswordDeserializer;
+
 public class Paciente {
 
     private DNI dni;
@@ -8,9 +12,13 @@ public class Paciente {
     private String password;
     private String direccion;
     private String telefono;
+
+    @JsonDeserialize(using = PasswordDeserializer.class)
     private SHA256 hash;
 
 
+    public Paciente() {
+    }
 
     public Paciente(DNI dni, String nombre, String email, String password, String telefono, String direccion) {
         this.dni = dni;
@@ -44,6 +52,12 @@ public class Paciente {
         return hash;
     }
 
+    // desserializar el campo hash usando este metodo
+    @JsonSetter("hash")
+    public void setHashClass(String hash) {
+        this.hash = new SHA256(hash, true);
+    }
+
     public void setHashClass(SHA256 hash) {
         this.hash = hash;
     }
@@ -55,7 +69,6 @@ public class Paciente {
     public void setEmail(String email) {
         this.email = email;
     }
-
 
     public DNI getDni() {
         return dni;

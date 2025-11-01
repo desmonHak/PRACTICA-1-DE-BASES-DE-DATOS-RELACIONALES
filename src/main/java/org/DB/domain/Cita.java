@@ -1,13 +1,24 @@
 package org.DB.domain;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.DB.util.SqlDateFromMongoDeserializer;
+
 import java.sql.Date;
 
 public class Cita {
 
     private DNI dni;
     private Integer numero_cita;
+
+    /**
+     * Deserializar las fechas usando la clase SqlDateFromMongoDeserializer
+     */
+    @JsonDeserialize(using = SqlDateFromMongoDeserializer.class)
     private Date fecha_cita;
     private Especialidad especialidad;
+
+    public Cita() {
+    }
 
     public Cita(DNI dni, Date fecha_cita, Especialidad especialidad, Integer numero_cita) {
         this.dni = dni;

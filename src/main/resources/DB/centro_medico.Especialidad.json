@@ -1,120 +1,60 @@
 [{
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bee"
-  },
   "nombre": "Cirugia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bef"
-  },
   "nombre": "Cardiologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf0"
-  },
   "nombre": "Urologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf1"
-  },
   "nombre": "Radiografia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf2"
-  },
   "nombre": "Pediatria"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf3"
-  },
   "nombre": "Dermatologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf4"
-  },
   "nombre": "Neurologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf5"
-  },
   "nombre": "Oftalmologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf6"
-  },
   "nombre": "Traumatologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf7"
-  },
   "nombre": "Ginecologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf8"
-  },
   "nombre": "Endocrinologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bf9"
-  },
   "nombre": "Psiquiatria"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bfa"
-  },
   "nombre": "Reumatologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bfb"
-  },
   "nombre": "Oncologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bfc"
-  },
   "nombre": "Neumologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bfd"
-  },
   "nombre": "Otorrinolaringologia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bfe"
-  },
   "nombre": "Medicina General"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04bff"
-  },
   "nombre": "Fisioterapia"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04c00"
-  },
   "nombre": "Nutricion"
 },
 {
-  "_id": {
-    "$oid": "68ff3987331a6bbbf3a04c01"
-  },
   "nombre": "Anestesiologia"
 }]
