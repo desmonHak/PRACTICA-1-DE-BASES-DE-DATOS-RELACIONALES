@@ -10,6 +10,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
+import org.DB.DAO.ManagerConnections.Hibernate.N_1.HibernateDAOMethods;
+import org.DB.DAO.ManagerConnections.Hibernate.N_1.PacienteHibernateDAO;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.DB.DAO.ManagerConnections.*;
 import org.DB.DAO.PacienteDAO;
@@ -38,25 +40,43 @@ public class loginController {
 
     public void onActionLogin(ActionEvent actionEvent) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, IllegalAccessException, InstantiationException {
 
+        Paciente paciente = null;
+
         try {
             PacienteDAO conn = new PacienteDAO(InitWindows.managerDBClass);
 
             String error_msg = "El usuario no existe.";
             try {
-                Paciente paciente = null;
-                try {
-                    // si se produce un error tipo SQLDataNotFound, entonces el correo no esta registrado
-                    paciente = conn.select(new ConditionsDB("email", ConditionsDBOperators.EQUALS, fieldEmail.getText()));
-                } catch (NullPointerException e) {
-                    throw new SingletonException(this.getClass(), "La base de datos no esta abierta");
-                } catch (Exception e) {
-                    if (e instanceof IllegalAccessException) {
-                        throw (IllegalAccessException)e;
-                    } else {
-                        e.printStackTrace();
+                String email = fieldEmail.getText();
+                if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+                    // Solo para MySQL y MongoDB
+                    try {
+                        // si se produce un error tipo SQLDataNotFound, entonces el correo no esta registrado
+                        paciente = conn.select(new ConditionsDB("email", ConditionsDBOperators.EQUALS, email));
+                    } catch (NullPointerException e) {
+                        throw new SingletonException(this.getClass(), "La base de datos no esta abierta");
+                    } catch (Exception e) {
+                        if (e instanceof IllegalAccessException) {
+                            throw (IllegalAccessException) e;
+                        } else {
+                            e.printStackTrace();
+                        }
                     }
+                } else {
+                    // para Hibernate
+                    PacienteHibernateDAO pacienteHibernateDAO = new PacienteHibernateDAO();
+                    for (Paciente this_paciente: pacienteHibernateDAO.getAll()) {
+                        if (this_paciente.getEmail().equals(email)) {
+                            paciente = this_paciente;
+                            break;
+                        }
+                    }
+
                 }
 
+                if (paciente == null) {
+                    throw new SQLDataNotFound("El usuario no se encontro");
+                }
 
                 /**
                  * obtenemos la clase SHA256 del paciente y accedemos al mectodo check para averiguar
@@ -191,6 +211,14 @@ public class loginController {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void onActionSetSGDBToHibernate(ActionEvent actionEvent) {
+        InitWindows.managerDBClass = HibernateDAOMethods.class;
+        System.out.println("Intentando usar el gestor MySQL, SGDB actual: " + InitWindows.managerDBClass.getName());
+    }
+
+    public void onActionSetSGDBToJson(ActionEvent actionEvent) {
     }
 }
 

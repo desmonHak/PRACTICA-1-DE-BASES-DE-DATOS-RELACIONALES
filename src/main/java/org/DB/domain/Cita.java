@@ -55,7 +55,8 @@ public class Cita {
 
     // Relación con Paciente, sin volver a insertar/actualizar el DNI.
     @ManyToOne//(fetch = FetchType.EAGER)
-    @JoinColumn(name = "dni", referencedColumnName = "dni", insertable = false, updatable = false)    private Paciente paciente;
+    @JoinColumn(name = "dni", referencedColumnName = "dni", insertable = false, updatable = false)
+    private Paciente paciente;
 
     public Cita() {
         this.paciente = null; // se puede setear después

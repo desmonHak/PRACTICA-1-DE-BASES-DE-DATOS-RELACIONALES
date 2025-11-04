@@ -8,7 +8,9 @@ import org.DB.util.HibernateUtil;
 import org.hibernate.Transaction;
 
 import javax.persistence.PersistenceException;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CitaHibernateDAO implements HibernateDAOMethods<Cita, Integer> {
 
@@ -102,6 +104,19 @@ public class CitaHibernateDAO implements HibernateDAOMethods<Cita, Integer> {
         return citas;
     }
 
+    public List<Cita> getAll(DNI dni) {
+        List<Cita> citas_ = getAll();
+
+        if (citas_ == null || dni == null) {
+            return Collections.emptyList();
+        }
+
+        return citas_.stream().filter(cita -> {
+            return cita.getDni() != null && dni.equals(cita.getDni());
+        })//.toList(); // toList solo vale para Java16+
+        .collect(Collectors.toList()); // compatible con Java8
+    }
+
     @Override
     public void update(Cita object) {
         Session session = null;
@@ -161,4 +176,33 @@ public class CitaHibernateDAO implements HibernateDAOMethods<Cita, Integer> {
             }
         }
     }
+
+    public static Integer getMaxNumeroCita() {
+        Session session = null;
+        Transaction transaction = null;
+        Integer maxNumeroCita = null;
+
+        try {
+            session = HibernateUtil.getSession();
+            transaction = session.beginTransaction();
+
+            // HQL: selecciona el máximo del campo numero_cita
+            maxNumeroCita = (Integer) session.createQuery(
+                    "select max(c.numero_cita) from Cita c"
+            ).uniqueResult();
+
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null)
+                transaction.rollback();
+            e.printStackTrace();
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+
+        return maxNumeroCita;
+    }
+
 }
