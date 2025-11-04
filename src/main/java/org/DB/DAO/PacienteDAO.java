@@ -10,6 +10,7 @@ import org.DB.Exceptions.ExceptionsDB.SQLDataNotFound;
 import org.DB.Exceptions.ExceptionsDB.SQLUnknownException;
 import org.DB.Exceptions.ExceptionsDB.SingletonException;
 import org.DB.domain.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -20,7 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class PacienteDAO {
+public class PacienteDAO implements OperationsCRUD_DAO {
 
     private Object conn;
     public Object instance_manager;
@@ -75,17 +76,17 @@ public class PacienteDAO {
     }
 
 
-
-    public void insert(Paciente paciente) throws SQLException, IllegalAccessException, IOException {
+    @Override
+    public void insert(@NotNull Object object) throws SQLException, IllegalAccessException, IOException {
 
         // Preparar datos para insertar
         HashMap<String, Object> newData = new HashMap<>();
-        newData.put("email", paciente.getEmail());
-        newData.put("password", paciente.getHashClass().getHash());
-        newData.put("dni", paciente.getDni().toString());
-        newData.put("nombre", paciente.getNombre());
-        newData.put("direccion", paciente.getDireccion());
-        newData.put("telefono", paciente.getTelefono());
+        newData.put("email", ((Paciente)(object)).getEmail());
+        newData.put("password", ((Paciente)(object)).getHashClass().getHash());
+        newData.put("dni", ((Paciente)(object)).getDni().toString());
+        newData.put("nombre", ((Paciente)(object)).getNombre());
+        newData.put("direccion", ((Paciente)(object)).getDireccion());
+        newData.put("telefono", ((Paciente)(object)).getTelefono());
 
         if (manager == ConnectionMongoDBSingleton.class) {
             print_debug("Cambiando a la DB centro_medico");
@@ -110,7 +111,8 @@ public class PacienteDAO {
         );
     }
 
-    public Paciente select(ConditionsDB condicion) throws SQLException, SQLDataNotFound, SQLUnknownException, IllegalAccessException, CommunicationsException, IOException {
+    @Override
+    public Paciente select(Object object) throws SQLException, SQLDataNotFound, SQLUnknownException, IllegalAccessException, CommunicationsException, IOException {
 
         List<String> campos = new ArrayList<>();
         campos.add("dni");
@@ -121,7 +123,7 @@ public class PacienteDAO {
         campos.add("email");
 
         ArrayList<ConditionsDB> condiciones = new ArrayList<>();
-        condiciones.add(condicion);
+        condiciones.add((ConditionsDB) object);
 
         // buscamos el atributo select_element en las clases ConnectionMongoDBSingleton o ConnectionMySQLSingleton
         Field lambda_select = null;
@@ -185,7 +187,15 @@ public class PacienteDAO {
         }
     }
 
+    @Override
+    public void delete(Object object) throws SQLException, IllegalAccessException, IOException {
 
+    }
+
+    @Override
+    public void update(Object object) throws IllegalAccessException, SQLException, IOException {
+
+    }
 
 
 }

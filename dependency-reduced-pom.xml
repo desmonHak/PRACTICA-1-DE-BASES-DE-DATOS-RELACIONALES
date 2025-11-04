@@ -52,6 +52,7 @@
         <version>3.4.1</version>
         <executions>
           <execution>
+            <id>shade</id>
             <phase>package</phase>
             <goals>
               <goal>shade</goal>
@@ -72,12 +73,20 @@
         <version>2.4.1</version>
         <executions>
           <execution>
+            <id>l4j</id>
             <phase>package</phase>
             <goals>
               <goal>launch4j</goal>
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>net.sf.launch4j</groupId>
+            <artifactId>launch4j</artifactId>
+            <version>3.50</version>
+          </dependency>
+        </dependencies>
         <configuration>
           <outfile>${project.build.directory}/DBPractica1.exe</outfile>
           <jar>${project.build.directory}/${project.build.finalName}-shaded.jar</jar>
@@ -86,8 +95,8 @@
           <headerType>console</headerType>
           <jre>
             <path>${java.home}</path>
-            <minVersion>11</minVersion>
-            <bundledJre64Bit>true</bundledJre64Bit>
+            <minVersion>25</minVersion>
+            <requires64Bit>true</requires64Bit>
           </jre>
         </configuration>
       </plugin>

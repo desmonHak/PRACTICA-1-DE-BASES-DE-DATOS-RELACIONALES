@@ -24,6 +24,10 @@ import org.DB.DAO.EspecialidadDAO;
 import org.DB.DAO.ManagerConnections.ConditionsDB;
 import org.DB.DAO.ManagerConnections.ConditionsDBOperators;
 import org.DB.DAO.ManagerConnections.ConnectionMongoDBSingleton;
+import org.DB.DAO.ManagerConnections.Hibernate.N_1.CitaHibernateDAO;
+import org.DB.DAO.ManagerConnections.Hibernate.N_1.EspecialidadHibernateDAO;
+import org.DB.DAO.ManagerConnections.Hibernate.N_1.HibernateDAOMethods;
+import org.DB.DAO.ManagerConnections.Hibernate.N_1.PacienteHibernateDAO;
 import org.DB.DAO.PacienteDAO;
 import org.DB.Exceptions.DniException;
 import org.DB.Exceptions.ExceptionsDB.SQLDataNotFound;
@@ -38,6 +42,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.sql.Date;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.sql.SQLNonTransientConnectionException;
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -70,7 +75,7 @@ public class CuestionarioController implements Initializable {
     // almacena la cita seleccionada en la tabla
     private Cita cita_now;
 
-    private final CitaDAO citasDB = new CitaDAO(InitWindows.managerDBClass);
+    private CitaDAO citasDB = null;
     private double xOffset = 0;
     private double yOffset = 0;
 
@@ -181,10 +186,20 @@ public class CuestionarioController implements Initializable {
 
         try {
             try {
-                ObservableList<Cita> citas =
-                        FXCollections.observableList(
-                                citasDB.select(
-                                        loginController.paciente_login.getDni()));
+                ObservableList<Cita> citas = null;
+                if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+                    citas =
+                            FXCollections.observableList(
+                                    citasDB.select(
+                                            loginController.paciente_login.getDni()));
+                } else {
+                    CitaHibernateDAO citaHibernateDAO = new CitaHibernateDAO();
+                    citas = FXCollections.observableList(
+                            citaHibernateDAO.getAll(
+                                    loginController.paciente_login.getDni()
+                            )
+                    );
+                }
                 tableCitas.setItems(citas);
             } catch (SQLException e) {
                 // error al obtener los datos
@@ -230,9 +245,15 @@ public class CuestionarioController implements Initializable {
         textFieldDNI.setText(loginController.paciente_login.getDni().toString());
         fieldDateCita.setValue(LocalDate.now());
         try {
-            int n_cita = citasDB.getMaxNumeroCita(); // primero hay que conectarse;
-            // cambiar el campo del numero de cita, con el valor obtenido de la DB
-            textFieldNumeroCita.setText(String.valueOf(n_cita));
+            if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+                int n_cita = citasDB.getMaxNumeroCita(); // primero hay que conectarse;
+                // cambiar el campo del numero de cita, con el valor obtenido de la DB
+                textFieldNumeroCita.setText(String.valueOf(n_cita));
+            } else {
+                int n_cita = CitaHibernateDAO.getMaxNumeroCita(); // primero hay que conectarse;
+                // cambiar el campo del numero de cita, con el valor obtenido de la DB
+                textFieldNumeroCita.setText(String.valueOf(n_cita));
+            }
         } catch (SQLException | IllegalAccessException | IOException e) {
             throw new RuntimeException(e);
         }
@@ -243,6 +264,16 @@ public class CuestionarioController implements Initializable {
      */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+            try {
+                citasDB = new CitaDAO(InitWindows.managerDBClass);
+            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+                     IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         try {
             log.clear_file();
         } catch (IOException e) {
@@ -287,25 +318,33 @@ public class CuestionarioController implements Initializable {
          * y añadirlas en el desplegable
          */
         EspecialidadDAO espe = null;
-        try {
-            log.print_log(String.valueOf(InitWindows.managerDBClass) + "\n");
-            espe = new EspecialidadDAO(InitWindows.managerDBClass);
-        } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
+        if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
             try {
-                log.print_log("No se pudo instanciar la clase EspecialidadDAO con " + InitWindows.managerDBClass + "\n");
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                log.print_log(String.valueOf(InitWindows.managerDBClass) + "\n");
+                espe = new EspecialidadDAO(InitWindows.managerDBClass);
+            } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+                     IllegalAccessException e) {
+                try {
+                    log.print_log("No se pudo instanciar la clase EspecialidadDAO con " + InitWindows.managerDBClass + "\n");
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            for(String especialidad : espe.load_especialidades()) {
-                textFieldEspecialidad.getItems().add(new Especialidad(especialidad));
+            try {
+                for (String especialidad : espe.load_especialidades()) {
+                    textFieldEspecialidad.getItems().add(new Especialidad(especialidad));
+                }
+            } catch (SQLException | IOException e) {
+                throw new RuntimeException(e);
             }
-        } catch (SQLException | IOException e) {
-            throw new RuntimeException(e);
+        } else {
+            EspecialidadHibernateDAO especialidadHibernateDAO = new EspecialidadHibernateDAO();
+            for (Especialidad especialidad : especialidadHibernateDAO.getAll()) {
+                textFieldEspecialidad.getItems().add(especialidad);
+            }
         }
 
         // actualizar los datos de la interfaz con los datos del usuario
@@ -318,11 +357,18 @@ public class CuestionarioController implements Initializable {
                 // añadir el filtrado de teclas, aqui indicamos que hacer cuando pulsamos alguna tecla en especifico
                 newScene.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
                     if (event.getCode() == KeyCode.ENTER) {
+                        try {
+                            log.print_log("Usando el SGDB: " + InitWindows.managerDBClass + "\n");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         // si se presiona enter, buscamos al paciente a traves del DNI
 
                         PacienteDAO pacienteDB = null;
                         try {
-                            pacienteDB = new PacienteDAO(InitWindows.managerDBClass);
+                            if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+                                pacienteDB = new PacienteDAO(InitWindows.managerDBClass);
+                            }
                         } catch (Throwable e) {
                             throw new RuntimeException(e);
                         }
@@ -330,18 +376,23 @@ public class CuestionarioController implements Initializable {
                         try {
                             // obtener el DNI del usuario validando si es un DNI
                             DNI dni = new DNI(textFieldDNI.getText());
-                            try {
-                                // obtenemos el paciente a traves del DNI si todo fue bieb
-                                paciente = pacienteDB.select(new ConditionsDB("dni", ConditionsDBOperators.EQUALS, dni.toString()));
-                            } catch (SQLException | IllegalAccessException e) {
-                                if (e instanceof CommunicationsException || e instanceof SQLNonTransientConnectionException) {
-                                    AlertsGlobal.invokeAlert("Error", "La conexion con el SGDB se cerro sin aviso.");
-                                    return;
-                                } else {
+                            if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+                                try {
+                                    // obtenemos el paciente a traves del DNI si todo fue bieb
+                                    paciente = pacienteDB.select(new ConditionsDB("dni", ConditionsDBOperators.EQUALS, dni.toString()));
+                                } catch (SQLException | IllegalAccessException e) {
+                                    if (e instanceof CommunicationsException || e instanceof SQLNonTransientConnectionException) {
+                                        AlertsGlobal.invokeAlert("Error", "La conexion con el SGDB se cerro sin aviso.");
+                                        return;
+                                    } else {
+                                        throw new RuntimeException(e);
+                                    }
+                                } catch (IOException e) {
                                     throw new RuntimeException(e);
                                 }
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
+                            } else { // hiberante
+                                PacienteHibernateDAO pacienteHibernateDAO = new PacienteHibernateDAO();
+                                paciente = pacienteHibernateDAO.getById(dni);
                             }
                             if (paciente != null) {
                                 // cambiamos el paciente si todo fue bien y actualizamos la GUI con los nuevos datos
@@ -411,16 +462,39 @@ public class CuestionarioController implements Initializable {
     }
 
     public void onActionAddCita(ActionEvent actionEvent) throws SQLException, IOException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        try {
-            // obtener el numero de cita + 1
-            int n_cita = citasDB.getMaxNumeroCita() + 1; // primero hay que conectarse;
-            textFieldNumeroCita.setText(String.valueOf(n_cita));
-            Especialidad especialidad = textFieldEspecialidad.getValue();
-            if (especialidad == null) {
-                AlertsGlobal.invokeAlert("Error", "Debe seleccionar una especialidad");
-                return;
-            }
+        int n_cita = 0;
+        Especialidad especialidad = textFieldEspecialidad.getValue();
 
+        if (especialidad == null) {
+            AlertsGlobal.invokeAlert("Error", "Debe seleccionar una especialidad");
+            return;
+        }
+
+        if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+            try {
+                // obtener el numero de cita + 1
+                n_cita = citasDB.getMaxNumeroCita() + 1; // primero hay que conectarse;
+
+                // crear una cita con los datos obtenidos
+                Cita cita = new Cita(
+                        new DNI(textFieldDNI.getText()),
+                        Date.valueOf(fieldDateCita.getValue()),
+                        especialidad,
+                        n_cita
+                );
+
+                // insertar en la base de datos
+                try {
+                    citasDB.insert(cita);
+                } catch (SQLIntegrityConstraintViolationException _) {
+                }
+            } catch (DniException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                AlertsGlobal.invokeAlert("Error", e.getMessage());
+            } catch (SQLNonTransientConnectionException e) {
+                AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
+            }
+        } else {
+            n_cita = CitaHibernateDAO.getMaxNumeroCita() + 1; // primero hay que conectarse;
             // crear una cita con los datos obtenidos
             Cita cita = new Cita(
                     new DNI(textFieldDNI.getText()),
@@ -428,15 +502,12 @@ public class CuestionarioController implements Initializable {
                     especialidad,
                     n_cita
             );
+            CitaHibernateDAO citaHibernateDAO = new CitaHibernateDAO();
+            citaHibernateDAO.save(cita);
 
-            // insertar en la base de datos
-            citasDB.insert(cita);
-        } catch (DniException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            AlertsGlobal.invokeAlert("Error", e.getMessage());
-        } catch (SQLNonTransientConnectionException e) {
-            AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
         }
 
+        textFieldNumeroCita.setText(String.valueOf(n_cita));
         // actualizar la tabla de la DB para mostrar el nuevo campo ingresada
         updateTable();
     }
@@ -445,10 +516,15 @@ public class CuestionarioController implements Initializable {
         // si no escogio una cita, mostrar error
         if (cita_now != null) {
             // eliminar la cita seleccionado
-            try {
-                citasDB.delete(cita_now);
-            } catch (SQLNonTransientConnectionException e) {
-                AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
+            if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+                try {
+                    citasDB.delete(cita_now);
+                } catch (SQLNonTransientConnectionException e) {
+                    AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
+                }
+            } else {
+                CitaHibernateDAO citaHibernateDAO = new CitaHibernateDAO();
+                citaHibernateDAO.deleteById(cita_now.getNumero_cita());
             }
 
             updateTable();
@@ -462,14 +538,20 @@ public class CuestionarioController implements Initializable {
          * si la cita no fue seleccionada mostrar error
          */
         if (cita_now != null) {
+
             cita_now.setEspecialidad(textFieldEspecialidad.getValue());
             cita_now.setFecha_cita(Date.valueOf(fieldDateCita.getValue()));
 
-            // actualizar la cita
-            try {
-                citasDB.update(cita_now);
-            } catch (SQLNonTransientConnectionException e) {
-                AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
+            if (InitWindows.managerDBClass != HibernateDAOMethods.class) {
+                // actualizar la cita
+                try {
+                    citasDB.update(cita_now);
+                } catch (SQLNonTransientConnectionException e) {
+                    AlertsGlobal.invokeAlert("Error", "La conexion con la base de datos se cerro inesperadamente");
+                }
+            } else {
+                CitaHibernateDAO citaHibernateDAO = new CitaHibernateDAO();
+                citaHibernateDAO.update(cita_now);
             }
 
             // actualizar tabla

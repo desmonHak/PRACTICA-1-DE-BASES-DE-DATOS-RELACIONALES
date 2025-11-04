@@ -23,11 +23,25 @@
          </font>
       </Label>
       <Button layoutX="254.0" layoutY="200.0" mnemonicParsing="false" onAction="#onActionExit" prefHeight="25.0" prefWidth="101.0" style="-fx-background-color: #3B6EA5;" text="EXIT" textFill="WHITE" />
-      <RadioButton fx:id="mysqlButton" layoutX="151.0" layoutY="251.0" mnemonicParsing="false" onAction="#onActionSetSGDBToMySQL" text="MySQL">
+      <RadioButton fx:id="mysqlButton" layoutX="151.0" layoutY="243.0"
+                   mnemonicParsing="false" onAction="#onActionSetSGDBToMySQL"
+                   text="MySQL">
          <toggleGroup>
             <ToggleGroup fx:id="GrupoSGDB" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton fx:id="mongoButton" layoutX="280.0" layoutY="251.0" mnemonicParsing="false" onAction="#onActionSetSGDBToMongoDB" selected="true" text="MongoDB" toggleGroup="$GrupoSGDB" />
+      <RadioButton fx:id="mongoButton" layoutX="280.0" layoutY="243.0"
+                   mnemonicParsing="false" onAction="#onActionSetSGDBToMongoDB"
+                   selected="true" text="MongoDB" toggleGroup="$GrupoSGDB" />
+      <RadioButton fx:id="hibernateButton" layoutX="151.0"
+                   layoutY="275.0" mnemonicParsing="false"
+                   onAction="#onActionSetSGDBToHibernate" text="Hibernate"
+                   toggleGroup="$GrupoSGDB">
+      </RadioButton>
+      <RadioButton fx:id="jsonButton" layoutX="280.0" layoutY="275.0"
+                   mnemonicParsing="false"
+                   onAction="#onActionSetSGDBToJson" text="Json"
+                   toggleGroup="$GrupoSGDB">
+      </RadioButton>
    </children>
 </AnchorPane>

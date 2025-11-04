@@ -26,97 +26,97 @@ db.Citas.insertMany([
         especialidad: "Radiografia"
     },
     {
-        dni: "49234567B",
+        dni: "49234567P",
         numero_cita: 5,
         fecha_cita: ISODate("2025-11-10T00:00:00Z"),
         especialidad: "Pediatria"
     },
     {
-        dni: "48345678C",
+        dni: "48345678T",
         numero_cita: 6,
         fecha_cita: ISODate("2025-12-01T00:00:00Z"),
         especialidad: "Dermatologia"
     },
     {
-        dni: "47456789D",
+        dni: "47456789S",
         numero_cita: 7,
         fecha_cita: ISODate("2025-11-15T00:00:00Z"),
         especialidad: "Neurologia"
     },
     {
-        dni: "46567890E",
+        dni: "46567890C",
         numero_cita: 8,
         fecha_cita: ISODate("2025-11-20T00:00:00Z"),
         especialidad: "Oftalmologia"
     },
     {
-        dni: "45678901F",
+        dni: "45678901G",
         numero_cita: 9,
         fecha_cita: ISODate("2025-12-03T00:00:00Z"),
         especialidad: "Traumatologia"
     },
     {
-        dni: "44789012G",
+        dni: "44789012P",
         numero_cita: 10,
         fecha_cita: ISODate("2025-12-08T00:00:00Z"),
         especialidad: "Ginecologia"
     },
     {
-        dni: "43890123H",
+        dni: "44789012P",
         numero_cita: 11,
         fecha_cita: ISODate("2025-12-15T00:00:00Z"),
         especialidad: "Endocrinologia"
     },
     {
-        dni: "42901234J",
+        dni: "42901234R",
         numero_cita: 12,
         fecha_cita: ISODate("2025-12-18T00:00:00Z"),
         especialidad: "Psiquiatria"
     },
     {
-        dni: "41912345K",
+        dni: "41912345C",
         numero_cita: 13,
         fecha_cita: ISODate("2026-01-10T00:00:00Z"),
         especialidad: "Reumatologia"
     },
     {
-        dni: "50123456A",
+        dni: "50123456Q",
         numero_cita: 14,
         fecha_cita: ISODate("2026-01-15T00:00:00Z"),
         especialidad: "Oncologia"
     },
     {
-        dni: "49234567B",
+        dni: "49234567P",
         numero_cita: 15,
         fecha_cita: ISODate("2026-01-20T00:00:00Z"),
         especialidad: "Neumologia"
     },
     {
-        dni: "48345678C",
+        dni: "48345678T",
         numero_cita: 16,
         fecha_cita: ISODate("2026-02-01T00:00:00Z"),
         especialidad: "Otorrinolaringologia"
     },
     {
-        dni: "47456789D",
+        dni: "47456789S",
         numero_cita: 17,
         fecha_cita: ISODate("2026-02-05T00:00:00Z"),
         especialidad: "Medicina General"
     },
     {
-        dni: "46567890E",
+        dni: "46567890C",
         numero_cita: 18,
         fecha_cita: ISODate("2026-02-10T00:00:00Z"),
         especialidad: "Fisioterapia"
     },
     {
-        dni: "45678901F",
+        dni: "45678901G",
         numero_cita: 19,
         fecha_cita: ISODate("2026-02-12T00:00:00Z"),
         especialidad: "Nutricion"
     },
     {
-        dni: "44789012G",
+        dni: "44789012P",
         numero_cita: 20,
         fecha_cita: ISODate("2026-02-20T00:00:00Z"),
         especialidad: "Anestesiologia"

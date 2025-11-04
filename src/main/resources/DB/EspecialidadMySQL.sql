@@ -9,7 +9,7 @@ USE PRACTICA_1_DE_BASES_DE_DATOS_RELACIONALES;
 
 -- crear la tabla para Especialidad
 CREATE TABLE IF NOT EXISTS Especialidad (
-	nombre TEXT
+	nombre VARCHAR(64) PRIMARY KEY
 );
 
 INSERT INTO Especialidad (nombre) VALUES

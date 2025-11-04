@@ -1,4 +1,2 @@
-[INFO    :2025-10-19 21:58:08.591] Hash data user: d18d7a39eff19d46e68a639ea3ca7f1a6b05d552462b0858e3a416ddf7c1bbb4
-[INFO    :2025-10-19 21:58:08.595] class org.DB.DAO.ManagerConnections.ConnectionMySQLDBSingleton
-[INFO    :2025-10-19 21:58:13.063] Hash data user: d18d7a39eff19d46e68a639ea3ca7f1a6b05d552462b0858e3a416ddf7c1bbb4
-[INFO    :2025-10-19 21:58:21.215] Hash data user: d18d7a39eff19d46e68a639ea3ca7f1a6b05d552462b0858e3a416ddf7c1bbb4
+[INFO    :2025-11-04 21:24:33.082] Hash data user: 80fd4108367506fe0f5e1faa7123b2c69776284f027dc8ba4333022e9dc8d225
+[INFO    :2025-11-04 21:24:38.386] Usando el SGDB: interface org.DB.DAO.ManagerConnections.Hibernate.N_1.HibernateDAOMethods[INFO    :2025-11-04 21:24:38.417] Hash data user: 80fd4108367506fe0f5e1faa7123b2c69776284f027dc8ba4333022e9dc8d225
