@@ -18,14 +18,19 @@ public class HibernateUtil implements Closeable {
 
     static {
 
-        Configuration cfg = new Configuration();
+        try {
+            Configuration cfg = new Configuration();
 
-        cfg.configure("hibernate.cfg.xml");
-        cfg.addAnnotatedClass(Cita.class);
-        cfg.addAnnotatedClass(Especialidad.class);
-        cfg.addAnnotatedClass(Paciente.class);
-        factory = cfg.buildSessionFactory();
-
+            cfg.configure("hibernate.cfg.xml");
+            cfg.addAnnotatedClass(Cita.class);
+            cfg.addAnnotatedClass(Especialidad.class);
+            cfg.addAnnotatedClass(Paciente.class);
+            factory = cfg.buildSessionFactory();
+        } catch (Throwable ex) {
+            System.err.println("Error al crear SessionFactory: " + ex.getMessage());
+            ex.printStackTrace();
+            throw new ExceptionInInitializerError(ex);
+        }
     }
 
     public static SessionFactory getSessionFactory() {

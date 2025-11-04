@@ -33,4 +33,10 @@ public class JsonLoaderClass {
 
         return JSON_MAPPER.readerForListOf(class_for_load).readValue(rootNode);
     }
+
+    // Guarda la lista en JSON
+    public void save(List<?> list) throws IOException {
+        File file_json = new File(name_and_path);
+        JSON_MAPPER.writeValue(file_json, list);
+    }
 }

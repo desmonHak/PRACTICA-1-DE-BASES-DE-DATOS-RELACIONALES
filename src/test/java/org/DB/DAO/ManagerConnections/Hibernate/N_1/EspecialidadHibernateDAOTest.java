@@ -54,9 +54,9 @@ class EspecialidadHibernateDAOTest {
     @DisplayName("Obtener todas las especialidades")
     void getAll() {
         List<Especialidad> especialidades = dao.getAll();
+        assertNotNull(especialidades, "La lista de especialidades no debe ser nula");
         especialidades.forEach(especialidad ->
                 System.out.println(especialidad));
-        assertNotNull(especialidades, "La lista de especialidades no debe ser nula");
         assertFalse(especialidades.isEmpty(), "La lista de especialidades no debe estar vacía");
         assertTrue(especialidades.stream().anyMatch(e -> e.getNombre().equals(especialidadTest.getNombre())),
                 "La especialidad de prueba debe estar en la lista");

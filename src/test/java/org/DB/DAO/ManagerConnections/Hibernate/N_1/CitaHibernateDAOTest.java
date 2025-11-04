@@ -126,8 +126,10 @@ class CitaHibernateDAOTest {
         assertNull(cita, "La cita debería haberse eliminado de la base de datos");
     }
 
-    @AfterAll
-    static void tearDown() {
-        HibernateUtil.shutdown();
-    }
+    // al realizar los tests desde maven da error ya que la conexion es compartida
+    // por todos los tests, pos lo que si se cierra, da error en el resto
+    //@AfterAll
+    //static void tearDown() {
+    //    HibernateUtil.shutdown();
+    //}
 }

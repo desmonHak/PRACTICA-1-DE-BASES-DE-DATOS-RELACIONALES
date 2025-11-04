@@ -1,5 +1,7 @@
 package org.DB.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.DB.util.PasswordDeserializer;
@@ -101,6 +103,7 @@ public class Paciente {
         this.password = password;
     }
 
+    @JsonProperty("hashClass") // necesario para que no cause conflicto
     public SHA256 getHashClass() {
         return hash;
     }
@@ -111,6 +114,7 @@ public class Paciente {
         this.hash = new SHA256(hash, true);
     }
 
+    @JsonIgnore
     public void setHashClass(SHA256 hash) {
         this.hash = hash;
     }

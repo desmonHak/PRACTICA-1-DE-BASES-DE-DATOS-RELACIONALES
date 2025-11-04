@@ -2,6 +2,7 @@ package org.DB.DAO.ManagerConnections.Hibernate.N_1;
 
 import org.DB.domain.DNI;
 import org.DB.domain.Paciente;
+import org.DB.util.HibernateUtil;
 import org.junit.jupiter.api.*;
 
 import java.util.List;
@@ -17,6 +18,9 @@ class PacienteHibernateDAOTest {
 
     @BeforeAll
     static void setUp() {
+        System.out.println("Conectando a: " +
+                HibernateUtil.getSession().getSessionFactory().getProperties().get("hibernate.connection.url"));
+
         dao = new PacienteHibernateDAO();
         dniTest = DNI.generarDniAleatorio();
         pacienteTest = new Paciente(
